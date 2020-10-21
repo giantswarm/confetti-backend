@@ -18,3 +18,5 @@
 
 # To own any file in a "some-stuff" directory anywhere in your repository:
 # some-stuff/ @octocat
+
+*    @giantswarm/chapter-front-end

@@ -1,14 +1,14 @@
 version: 2.1
 
 orbs:
-  architect: giantswarm/architect@0.10.2
+  architect: giantswarm/architect@0.14.0
 
 workflows:
-  test:
+  go-build:
     jobs:
-      - architect/go-test:
-          name: go-test
+      - architect/go-build:
+          name: go-build
+          binary: confetti-backend
           filters:
-            # Trigger job also on git tag.
             tags:
               only: /^v.*/

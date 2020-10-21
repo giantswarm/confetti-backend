@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/giantswarm/microerror"
-	"github.com/giantswarm/micrologger"
 	"github.com/spf13/cobra"
 
 	"github.com/giantswarm/confetti-backend/cmd"
@@ -20,21 +19,9 @@ func main() {
 func mainE(ctx context.Context) error {
 	var err error
 
-	var logger micrologger.Logger
-	{
-		c := micrologger.Config{}
-
-		logger, err = micrologger.New(c)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-	}
-
 	var rootCommand *cobra.Command
 	{
-		c := cmd.Config{
-			Logger:     logger,
-		}
+		c := cmd.Config{}
 
 		rootCommand, err = cmd.New(c)
 		if err != nil {

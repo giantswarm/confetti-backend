@@ -5,9 +5,9 @@ import (
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/root"
+	v1 "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
-	"github.com/giantswarm/confetti-backend/pkg/server/root"
-	v1 "github.com/giantswarm/confetti-backend/pkg/server/v1"
 )
 
 type Config struct {

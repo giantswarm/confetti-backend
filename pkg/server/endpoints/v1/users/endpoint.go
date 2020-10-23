@@ -8,8 +8,8 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/users/login"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
-	"github.com/giantswarm/confetti-backend/pkg/server/v1/users/login"
 )
 
 const (

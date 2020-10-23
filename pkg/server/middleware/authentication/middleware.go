@@ -28,6 +28,8 @@ func New(c Config) (*Middleware, error) {
 }
 
 func (m *Middleware) Middleware(ctx *atreugo.RequestCtx) error {
+	ctx.Logger().Printf("someone's at the door")
+
 	err := ctx.Next()
 	if err != nil {
 		return microerror.Mask(err)

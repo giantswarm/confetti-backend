@@ -24,17 +24,11 @@ func New(c Config) *Server {
 		flags:   c.Flags,
 	}
 
-	return s
-}
-
-func (s *Server) Boot() error {
-	var err error
-
 	// v1 := s.atreugo.NewGroupPath("/v1")
 
 	var rootEndpoint *root.Endpoint
 	{
-		rootEndpoint, err = s.newRootEndpoint()
+		rootEndpoint, err = newRootEndpoint()
 		if err != nil {
 			return microerror.Mask(err)
 		}
@@ -42,16 +36,20 @@ func (s *Server) Boot() error {
 		s.atreugo.Path(rootEndpoint.Method(), rootEndpoint.Path(), rootEndpoint.Endpoint())
 	}
 
-	if err = s.atreugo.ListenAndServe(); err != nil {
+	return s
+}
+
+func (s *Server) Boot() error {
+	if err := s.atreugo.ListenAndServe(); err != nil {
 		return microerror.Mask(err)
 	}
 
 	return nil
 }
 
-func (s *Server) newRootEndpoint() (*root.Endpoint, error) {
+func newRootEndpoint(flags *flag.Flag) (*root.Endpoint, error) {
 	c := root.EndpointConfig{
-		Flags: s.flags,
+		Flags: flags,
 	}
 	e, err := root.NewEndpoint(&c)
 	if err != nil {

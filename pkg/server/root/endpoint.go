@@ -7,6 +7,7 @@ import (
 
 	"github.com/giantswarm/confetti-backend/flag"
 	"github.com/giantswarm/confetti-backend/pkg/project"
+	"github.com/giantswarm/microerror"
 )
 
 const (
@@ -40,7 +41,12 @@ func (e *Endpoint) Endpoint() atreugo.View {
 			Version:     project.Version(),
 		}
 
-		return ctx.JSONResponse(res, http.StatusOK)
+		err := ctx.JSONResponse(res, http.StatusOK)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		return nil
 	}
 }
 

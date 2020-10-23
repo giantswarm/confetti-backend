@@ -6,11 +6,12 @@ import (
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/confetti-backend/flag"
+	"github.com/giantswarm/microerror"
 )
 
 const (
 	method = "POST"
-	path   = "/login/"
+	path   = "/users/login/"
 )
 
 type EndpointConfig struct {
@@ -38,7 +39,12 @@ func (e *Endpoint) Endpoint() atreugo.View {
 			Token: "",
 		}
 
-		return ctx.JSONResponse(res, http.StatusOK)
+		err := ctx.JSONResponse(res, http.StatusOK)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		return nil
 	}
 }
 

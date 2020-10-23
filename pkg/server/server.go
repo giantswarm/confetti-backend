@@ -6,6 +6,7 @@ import (
 
 	"github.com/giantswarm/confetti-backend/flag"
 	"github.com/giantswarm/confetti-backend/pkg/server/root"
+	"github.com/giantswarm/confetti-backend/pkg/server/v1/users"
 )
 
 type Config struct {
@@ -26,8 +27,6 @@ func New(c Config) (*Server, error) {
 		flags:   c.Flags,
 	}
 
-	// v1 := s.atreugo.NewGroupPath("/v1")
-
 	var rootEndpoint *root.Endpoint
 	{
 		rootEndpoint, err = newRootEndpoint(c.Flags)
@@ -36,6 +35,19 @@ func New(c Config) (*Server, error) {
 		}
 
 		s.atreugo.Path(rootEndpoint.Method(), rootEndpoint.Path(), rootEndpoint.Endpoint())
+	}
+
+	v1 := s.atreugo.NewGroupPath("/v1")
+
+	var usersEndpoint *users.Endpoint
+	{
+		usersEndpoint, err = newUsersEndpoint(c.Flags)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+
+		v1.Path(usersEndpoint.Method(), usersEndpoint.Path(), usersEndpoint.Endpoint())
+		v1.Path(usersEndpoint.Login.Method(), usersEndpoint.Login.Path(), usersEndpoint.Login.Endpoint())
 	}
 
 	return s, nil
@@ -58,6 +70,23 @@ func newRootEndpoint(flags *flag.Flag) (*root.Endpoint, error) {
 			Flags: flags,
 		}
 		endpoint, err = root.NewEndpoint(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	return endpoint, nil
+}
+
+func newUsersEndpoint(flags *flag.Flag) (*users.Endpoint, error) {
+	var err error
+
+	var endpoint *users.Endpoint
+	{
+		c := users.EndpointConfig{
+			Flags: flags,
+		}
+		endpoint, err = users.NewEndpoint(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}

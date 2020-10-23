@@ -32,7 +32,7 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	}
 
 	endpoint := &Endpoint{
-		Login: loginE,
+		Login: loginEndpoint,
 
 		flags: c.Flags,
 	}
@@ -42,7 +42,12 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 
 func (e *Endpoint) Endpoint() atreugo.View {
 	return func(ctx *atreugo.RequestCtx) error {
-		return ctx.HTTPResponse("", http.StatusNotImplemented)
+		err := ctx.HTTPResponse("", http.StatusNotFound)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+
+		return nil
 	}
 }
 
@@ -64,7 +69,7 @@ func createLoginEndpoint(flags *flag.Flag) (*login.Endpoint, error) {
 		}
 		service, err = login.NewService(c)
 		if err != nil {
-			return microerror.Mask(err)
+			return nil, microerror.Mask(err)
 		}
 	}
 
@@ -80,5 +85,5 @@ func createLoginEndpoint(flags *flag.Flag) (*login.Endpoint, error) {
 		}
 	}
 
-	return e, nil
+	return endpoint, nil
 }

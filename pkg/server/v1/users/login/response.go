@@ -1,5 +1,5 @@
 package login
 
 type Response struct {
-	Token string `json:"string"`
+	Token string `json:"token"`
 }

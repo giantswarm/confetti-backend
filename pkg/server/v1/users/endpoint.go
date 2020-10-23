@@ -5,9 +5,10 @@ import (
 
 	"github.com/savsgio/atreugo/v11"
 
+	"github.com/giantswarm/microerror"
+
 	"github.com/giantswarm/confetti-backend/flag"
 	"github.com/giantswarm/confetti-backend/pkg/server/v1/users/login"
-	"github.com/giantswarm/microerror"
 )
 
 const (

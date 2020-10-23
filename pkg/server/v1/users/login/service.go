@@ -1,11 +1,12 @@
 package login
 
 import (
+	"crypto/rand"
 	"fmt"
-	"math/rand"
+
+	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/flag"
-	"github.com/giantswarm/microerror"
 )
 
 type ServiceConfig struct {
@@ -35,7 +36,10 @@ func (s *Service) Authenticate() (string, error) {
 
 func (s *Service) generateToken() (string, error) {
 	b := make([]byte, 32)
-	rand.Read(b)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", microerror.Mask(err)
+	}
 
 	return fmt.Sprintf("%x", b), nil
 }

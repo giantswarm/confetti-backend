@@ -2,25 +2,26 @@ package login
 
 import (
 	"testing"
+
 	"github.com/giantswarm/confetti-backend/flag"
 )
 
 func TestService_generateToken(t *testing.T) {
-	testCases := []struct{
-		name string
+	testCases := []struct {
+		name  string
 		tries int
 	}{
 		{
-			name: "tokens should not repeat themselves",
+			name:  "tokens should not repeat themselves",
 			tries: 64,
 		},
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.name, func (t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			flags := flag.New()
 
-			c := ServiceConfig {
+			c := ServiceConfig{
 				Flags: flags,
 			}
 			s, err := NewService(c)

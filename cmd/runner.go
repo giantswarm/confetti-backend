@@ -35,6 +35,8 @@ func (r *runner) Run(cmd *cobra.Command, args []string) error {
 }
 
 func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) error {
+	var err error
+
 	f := globalFlags.New()
 	{
 		f.Port = r.flag.Port
@@ -61,10 +63,13 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 			Atreugo: atreugoServer,
 			Flags:   f,
 		}
-		s = server.New(c)
+		s, err = server.New(c)
+		if err != nil {
+			return microerror.Mask(err)
+		}
 	}
 
-	err := s.Boot()
+	err = s.Boot()
 	if err != nil {
 		return microerror.Mask(err)
 	}

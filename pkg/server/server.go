@@ -18,7 +18,9 @@ type Server struct {
 	flags   *flag.Flag
 }
 
-func New(c Config) *Server {
+func New(c Config) (*Server, error) {
+	var err error
+
 	s := &Server{
 		atreugo: c.Atreugo,
 		flags:   c.Flags,
@@ -28,15 +30,15 @@ func New(c Config) *Server {
 
 	var rootEndpoint *root.Endpoint
 	{
-		rootEndpoint, err = newRootEndpoint()
+		rootEndpoint, err = newRootEndpoint(c.Flags)
 		if err != nil {
-			return microerror.Mask(err)
+			return nil, microerror.Mask(err)
 		}
 
 		s.atreugo.Path(rootEndpoint.Method(), rootEndpoint.Path(), rootEndpoint.Endpoint())
 	}
 
-	return s
+	return s, nil
 }
 
 func (s *Server) Boot() error {
@@ -48,13 +50,18 @@ func (s *Server) Boot() error {
 }
 
 func newRootEndpoint(flags *flag.Flag) (*root.Endpoint, error) {
-	c := root.EndpointConfig{
-		Flags: flags,
-	}
-	e, err := root.NewEndpoint(&c)
-	if err != nil {
-		return nil, microerror.Mask(err)
+	var err error
+
+	var endpoint *root.Endpoint
+	{
+		c := root.EndpointConfig{
+			Flags: flags,
+		}
+		endpoint, err = root.NewEndpoint(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
 	}
 
-	return e, nil
+	return endpoint, nil
 }

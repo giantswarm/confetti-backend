@@ -22,7 +22,7 @@ type Endpoint struct {
 	flags *flag.Flag
 }
 
-func NewEndpoint(c *EndpointConfig) (*Endpoint, error) {
+func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	endpoint := &Endpoint{
 		flags: c.Flags,
 	}

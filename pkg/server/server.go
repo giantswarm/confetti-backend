@@ -7,7 +7,7 @@ import (
 	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
 	"github.com/giantswarm/confetti-backend/pkg/server/root"
-	"github.com/giantswarm/confetti-backend/pkg/server/v1/users"
+	v1 "github.com/giantswarm/confetti-backend/pkg/server/v1"
 )
 
 type Config struct {
@@ -49,20 +49,21 @@ func New(c Config) (*Server, error) {
 		s.atreugo.Path(rootEndpoint.Method(), rootEndpoint.Path(), rootEndpoint.Endpoint())
 	}
 
-	v1 := s.atreugo.NewGroupPath("/v1")
-
-	var usersEndpoint *users.Endpoint
+	var v1Endpoint *v1.Endpoint
 	{
-		usersEndpoint, err = newUsersEndpoint(s.flags)
+		group := s.atreugo.NewGroupPath("/v1")
+
+		v1Endpoint, err = newV1Endpoint(s.flags)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 
-		v1.Path(usersEndpoint.Method(), usersEndpoint.Path(), usersEndpoint.Endpoint())
-		v1.Path(
-			usersEndpoint.Login.Method(),
-			usersEndpoint.Login.Path(),
-			usersEndpoint.Login.Endpoint(),
+		group.Path(v1Endpoint.Method(), v1Endpoint.Path(), v1Endpoint.Endpoint())
+		group.Path(v1Endpoint.Users.Method(), v1Endpoint.Users.Path(), v1Endpoint.Users.Endpoint())
+		group.Path(
+			v1Endpoint.Users.Login.Method(),
+			v1Endpoint.Users.Login.Path(),
+			v1Endpoint.Users.Login.Endpoint(),
 		).UseBefore(allMiddlewares.Authentication.Middleware)
 	}
 
@@ -94,15 +95,15 @@ func newRootEndpoint(flags *flags.Flags) (*root.Endpoint, error) {
 	return endpoint, nil
 }
 
-func newUsersEndpoint(flags *flags.Flags) (*users.Endpoint, error) {
+func newV1Endpoint(flags *flags.Flags) (*v1.Endpoint, error) {
 	var err error
 
-	var endpoint *users.Endpoint
+	var endpoint *v1.Endpoint
 	{
-		c := users.EndpointConfig{
+		c := v1.EndpointConfig{
 			Flags: flags,
 		}
-		endpoint, err = users.NewEndpoint(c)
+		endpoint, err = v1.NewEndpoint(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}

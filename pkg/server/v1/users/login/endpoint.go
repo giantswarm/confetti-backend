@@ -35,11 +35,16 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 
 func (e *Endpoint) Endpoint() atreugo.View {
 	return func(ctx *atreugo.RequestCtx) error {
-		res := Response{
-			Token: "",
+		token, err := e.service.Authenticate()
+		if err != nil {
+			return microerror.Mask(err)
 		}
 
-		err := ctx.JSONResponse(res, http.StatusOK)
+		res := Response{
+			Token: token,
+		}
+
+		err = ctx.JSONResponse(res, http.StatusOK)
 		if err != nil {
 			return microerror.Mask(err)
 		}

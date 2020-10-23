@@ -27,6 +27,10 @@ type Endpoint struct {
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
+	if c.Flags == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Flags must not be empty", c)
+	}
+
 	loginEndpoint, err := createLoginEndpoint(c.Flags)
 	if err != nil {
 		return nil, microerror.Mask(err)

@@ -21,6 +21,13 @@ type Server struct {
 }
 
 func New(c Config) (*Server, error) {
+	if c.Flags == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Flags must not be empty", c)
+	}
+	if c.Atreugo == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Atreugo must not be empty", c)
+	}
+
 	var err error
 
 	s := &Server{

@@ -30,7 +30,7 @@ func New(c Config) (*Server, error) {
 
 	var allMiddlewares *middleware.Middleware
 	{
-		c := middleware.Config {
+		c := middleware.Config{
 			Flags: s.flags,
 		}
 		allMiddlewares, err = middleware.New(c)

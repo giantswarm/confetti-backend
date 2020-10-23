@@ -4,8 +4,9 @@ import (
 	"crypto/rand"
 	"fmt"
 
-	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/microerror"
+
+	"github.com/giantswarm/confetti-backend/flags"
 )
 
 type ServiceConfig struct {

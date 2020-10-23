@@ -1,9 +1,10 @@
 package authentication
 
 import (
-	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/microerror"
 	"github.com/savsgio/atreugo/v11"
+
+	"github.com/giantswarm/confetti-backend/flags"
 )
 
 type Config struct {

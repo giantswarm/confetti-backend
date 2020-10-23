@@ -4,19 +4,19 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/savsgio/atreugo/v11"
 
-	"github.com/giantswarm/confetti-backend/flag"
+	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/root"
 	"github.com/giantswarm/confetti-backend/pkg/server/v1/users"
 )
 
 type Config struct {
 	Atreugo *atreugo.Atreugo
-	Flags   *flag.Flag
+	Flags   *flags.Flags
 }
 
 type Server struct {
 	atreugo *atreugo.Atreugo
-	flags   *flag.Flag
+	flags   *flags.Flags
 }
 
 func New(c Config) (*Server, error) {
@@ -61,7 +61,7 @@ func (s *Server) Boot() error {
 	return nil
 }
 
-func newRootEndpoint(flags *flag.Flag) (*root.Endpoint, error) {
+func newRootEndpoint(flags *flags.Flags) (*root.Endpoint, error) {
 	var err error
 
 	var endpoint *root.Endpoint
@@ -78,7 +78,7 @@ func newRootEndpoint(flags *flag.Flag) (*root.Endpoint, error) {
 	return endpoint, nil
 }
 
-func newUsersEndpoint(flags *flag.Flag) (*users.Endpoint, error) {
+func newUsersEndpoint(flags *flags.Flags) (*users.Endpoint, error) {
 	var err error
 
 	var endpoint *users.Endpoint

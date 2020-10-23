@@ -5,9 +5,8 @@ import (
 
 	"github.com/savsgio/atreugo/v11"
 
+	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/microerror"
-
-	"github.com/giantswarm/confetti-backend/flag"
 )
 
 const (
@@ -16,12 +15,12 @@ const (
 )
 
 type EndpointConfig struct {
-	Flags   *flag.Flag
+	Flags   *flags.Flags
 	Service *Service
 }
 
 type Endpoint struct {
-	flags   *flag.Flag
+	flags   *flags.Flags
 	service *Service
 }
 

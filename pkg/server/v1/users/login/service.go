@@ -4,17 +4,16 @@ import (
 	"crypto/rand"
 	"fmt"
 
+	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/microerror"
-
-	"github.com/giantswarm/confetti-backend/flag"
 )
 
 type ServiceConfig struct {
-	Flags *flag.Flag
+	Flags *flags.Flags
 }
 
 type Service struct {
-	flags *flag.Flag
+	flags *flags.Flags
 }
 
 func NewService(c ServiceConfig) (*Service, error) {

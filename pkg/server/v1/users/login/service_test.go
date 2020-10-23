@@ -3,7 +3,7 @@ package login
 import (
 	"testing"
 
-	"github.com/giantswarm/confetti-backend/flag"
+	"github.com/giantswarm/confetti-backend/flags"
 )
 
 func TestService_generateToken(t *testing.T) {
@@ -19,7 +19,7 @@ func TestService_generateToken(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			flags := flag.New()
+			flags := flags.New()
 
 			c := ServiceConfig{
 				Flags: flags,

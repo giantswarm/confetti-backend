@@ -9,7 +9,7 @@ import (
 	"github.com/savsgio/atreugo/v11"
 	"github.com/spf13/cobra"
 
-	globalFlags "github.com/giantswarm/confetti-backend/flag"
+	globalFlags "github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/confetti-backend/pkg/project"
 	"github.com/giantswarm/confetti-backend/pkg/server"
 )

@@ -7,7 +7,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/confetti-backend/flag"
+	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/confetti-backend/pkg/project"
 )
 
@@ -17,11 +17,11 @@ const (
 )
 
 type EndpointConfig struct {
-	Flags *flag.Flag
+	Flags *flags.Flags
 }
 
 type Endpoint struct {
-	flags *flag.Flag
+	flags *flags.Flags
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {

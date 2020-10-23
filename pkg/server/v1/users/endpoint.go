@@ -7,7 +7,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/confetti-backend/flag"
+	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/v1/users/login"
 )
 
@@ -17,13 +17,13 @@ const (
 )
 
 type EndpointConfig struct {
-	Flags *flag.Flag
+	Flags *flags.Flags
 }
 
 type Endpoint struct {
 	Login *login.Endpoint
 
-	flags *flag.Flag
+	flags *flags.Flags
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
@@ -60,7 +60,7 @@ func (e *Endpoint) Method() string {
 	return method
 }
 
-func createLoginEndpoint(flags *flag.Flag) (*login.Endpoint, error) {
+func createLoginEndpoint(flags *flags.Flags) (*login.Endpoint, error) {
 	var err error
 
 	var service *login.Service

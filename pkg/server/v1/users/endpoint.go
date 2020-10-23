@@ -8,6 +8,7 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
 	"github.com/giantswarm/confetti-backend/pkg/server/v1/users/login"
 )
 
@@ -17,21 +18,26 @@ const (
 )
 
 type EndpointConfig struct {
-	Flags *flags.Flags
+	Flags      *flags.Flags
+	Middleware *middleware.Middleware
 }
 
 type Endpoint struct {
 	Login *login.Endpoint
 
-	flags *flags.Flags
+	flags      *flags.Flags
+	middleware *middleware.Middleware
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	if c.Flags == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Flags must not be empty", c)
 	}
+	if c.Middleware == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Middleware must not be empty", c)
+	}
 
-	loginEndpoint, err := createLoginEndpoint(c.Flags)
+	loginEndpoint, err := createLoginEndpoint(c.Flags, c.Middleware)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -39,7 +45,8 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	endpoint := &Endpoint{
 		Login: loginEndpoint,
 
-		flags: c.Flags,
+		flags:      c.Flags,
+		middleware: c.Middleware,
 	}
 
 	return endpoint, nil
@@ -56,6 +63,10 @@ func (e *Endpoint) Endpoint() atreugo.View {
 	}
 }
 
+func (e *Endpoint) Middlewares() atreugo.Middlewares {
+	return atreugo.Middlewares{}
+}
+
 func (e *Endpoint) Path() string {
 	return path
 }
@@ -64,7 +75,7 @@ func (e *Endpoint) Method() string {
 	return method
 }
 
-func createLoginEndpoint(flags *flags.Flags) (*login.Endpoint, error) {
+func createLoginEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*login.Endpoint, error) {
 	var err error
 
 	var service *login.Service
@@ -81,8 +92,9 @@ func createLoginEndpoint(flags *flags.Flags) (*login.Endpoint, error) {
 	var endpoint *login.Endpoint
 	{
 		c := login.EndpointConfig{
-			Flags:   flags,
-			Service: service,
+			Flags:      flags,
+			Service:    service,
+			Middleware: middleware,
 		}
 		endpoint, err = login.NewEndpoint(c)
 		if err != nil {

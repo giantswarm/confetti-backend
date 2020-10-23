@@ -48,30 +48,42 @@ func New(c Config) (*Server, error) {
 
 	var rootEndpoint *root.Endpoint
 	{
-		rootEndpoint, err = newRootEndpoint(s.flags)
+		rootEndpoint, err = newRootEndpoint(s.flags, allMiddlewares)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 
-		s.atreugo.Path(rootEndpoint.Method(), rootEndpoint.Path(), rootEndpoint.Endpoint())
+		s.atreugo.Path(
+			rootEndpoint.Method(),
+			rootEndpoint.Path(),
+			rootEndpoint.Endpoint(),
+		).Middlewares(rootEndpoint.Middlewares())
 	}
 
 	var v1Endpoint *v1.Endpoint
 	{
 		group := s.atreugo.NewGroupPath("/v1")
 
-		v1Endpoint, err = newV1Endpoint(s.flags)
+		v1Endpoint, err = newV1Endpoint(s.flags, allMiddlewares)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 
-		group.Path(v1Endpoint.Method(), v1Endpoint.Path(), v1Endpoint.Endpoint())
-		group.Path(v1Endpoint.Users.Method(), v1Endpoint.Users.Path(), v1Endpoint.Users.Endpoint())
+		group.Path(
+			v1Endpoint.Method(),
+			v1Endpoint.Path(),
+			v1Endpoint.Endpoint(),
+		).Middlewares(v1Endpoint.Middlewares())
+		group.Path(
+			v1Endpoint.Users.Method(),
+			v1Endpoint.Users.Path(),
+			v1Endpoint.Users.Endpoint(),
+		).Middlewares(v1Endpoint.Users.Middlewares())
 		group.Path(
 			v1Endpoint.Users.Login.Method(),
 			v1Endpoint.Users.Login.Path(),
 			v1Endpoint.Users.Login.Endpoint(),
-		).UseBefore(allMiddlewares.Authentication.Middleware)
+		).Middlewares(v1Endpoint.Users.Login.Middlewares())
 	}
 
 	return s, nil
@@ -85,13 +97,14 @@ func (s *Server) Boot() error {
 	return nil
 }
 
-func newRootEndpoint(flags *flags.Flags) (*root.Endpoint, error) {
+func newRootEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*root.Endpoint, error) {
 	var err error
 
 	var endpoint *root.Endpoint
 	{
 		c := root.EndpointConfig{
-			Flags: flags,
+			Flags:      flags,
+			Middleware: middleware,
 		}
 		endpoint, err = root.NewEndpoint(c)
 		if err != nil {
@@ -102,13 +115,14 @@ func newRootEndpoint(flags *flags.Flags) (*root.Endpoint, error) {
 	return endpoint, nil
 }
 
-func newV1Endpoint(flags *flags.Flags) (*v1.Endpoint, error) {
+func newV1Endpoint(flags *flags.Flags, middleware *middleware.Middleware) (*v1.Endpoint, error) {
 	var err error
 
 	var endpoint *v1.Endpoint
 	{
 		c := v1.EndpointConfig{
-			Flags: flags,
+			Flags:      flags,
+			Middleware: middleware,
 		}
 		endpoint, err = v1.NewEndpoint(c)
 		if err != nil {

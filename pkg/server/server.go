@@ -5,6 +5,7 @@ import (
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
 	"github.com/giantswarm/confetti-backend/pkg/server/root"
 	"github.com/giantswarm/confetti-backend/pkg/server/v1/users"
 )
@@ -27,9 +28,20 @@ func New(c Config) (*Server, error) {
 		flags:   c.Flags,
 	}
 
+	var allMiddlewares *middleware.Middleware
+	{
+		c := middleware.Config {
+			Flags: s.flags,
+		}
+		allMiddlewares, err = middleware.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var rootEndpoint *root.Endpoint
 	{
-		rootEndpoint, err = newRootEndpoint(c.Flags)
+		rootEndpoint, err = newRootEndpoint(s.flags)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -41,13 +53,17 @@ func New(c Config) (*Server, error) {
 
 	var usersEndpoint *users.Endpoint
 	{
-		usersEndpoint, err = newUsersEndpoint(c.Flags)
+		usersEndpoint, err = newUsersEndpoint(s.flags)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 
 		v1.Path(usersEndpoint.Method(), usersEndpoint.Path(), usersEndpoint.Endpoint())
-		v1.Path(usersEndpoint.Login.Method(), usersEndpoint.Login.Path(), usersEndpoint.Login.Endpoint())
+		v1.Path(
+			usersEndpoint.Login.Method(),
+			usersEndpoint.Login.Path(),
+			usersEndpoint.Login.Endpoint(),
+		).UseBefore(allMiddlewares.Authentication.Middleware)
 	}
 
 	return s, nil

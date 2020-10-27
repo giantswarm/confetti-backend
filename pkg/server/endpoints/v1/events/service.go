@@ -1,19 +1,20 @@
 package events
 
 import (
+	"github.com/giantswarm/microerror"
+
 	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model/types"
-	"github.com/giantswarm/microerror"
 )
 
 type ServiceConfig struct {
-	Flags *flags.Flags
+	Flags      *flags.Flags
 	Repository *model.Repository
 }
 
 type Service struct {
-	flags *flags.Flags
+	flags      *flags.Flags
 	repository *model.Repository
 }
 
@@ -26,7 +27,7 @@ func NewService(c ServiceConfig) (*Service, error) {
 	}
 
 	service := &Service{
-		flags: c.Flags,
+		flags:      c.Flags,
 		repository: c.Repository,
 	}
 
@@ -41,4 +42,3 @@ func (s *Service) GetEvents() ([]types.Event, error) {
 
 	return events, nil
 }
-

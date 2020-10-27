@@ -15,8 +15,8 @@ type Event interface {
 
 type BaseEvent struct {
 	active bool
-	id string
-	name string
+	id     string
+	name   string
 }
 
 func (be *BaseEvent) Active() bool {

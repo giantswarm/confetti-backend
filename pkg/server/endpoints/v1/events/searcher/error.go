@@ -28,4 +28,3 @@ var notFoundError = &microerror.Error{
 func IsNotFoundError(err error) bool {
 	return microerror.Cause(err) == notFoundError
 }
-

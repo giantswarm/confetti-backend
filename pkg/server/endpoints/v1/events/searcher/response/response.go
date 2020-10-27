@@ -5,9 +5,9 @@ type ResponseDetails struct {
 }
 
 type Response struct {
-	Active bool `json:"active"`
-	ID string `json:"id"`
-	Name string `json:"name"`
-	EventType string `json:"event_type"`
-	Details ResponseDetails `json:"details"`
+	Active    bool            `json:"active"`
+	ID        string          `json:"id"`
+	Name      string          `json:"name"`
+	EventType string          `json:"event_type"`
+	Details   ResponseDetails `json:"details"`
 }

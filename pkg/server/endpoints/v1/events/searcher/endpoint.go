@@ -66,23 +66,23 @@ func (e *Endpoint) Endpoint() atreugo.View {
 		}
 
 		res := response.Response{
-			Active: event.Active(),
-			ID: event.ID(),
-			Name: event.Name(),
-			EventType : string(event.Type()),
+			Active:    event.Active(),
+			ID:        event.ID(),
+			Name:      event.Name(),
+			EventType: string(event.Type()),
 		}
 		{
 			// Add event type-specific details.
 			switch e := event.(type) {
-				case *types.OnsiteEvent:
-					res.Details.Rooms = make([]response.ResponseOnsiteRoom, 0, len(e.Rooms))
-					for _, room := range e.Rooms {
-						res.Details.Rooms = append(res.Details.Rooms, response.ResponseOnsiteRoom{
-							ID: room.ID,
-							Name: room.Name,
-							ConferenceURL: room.ConferenceURL,
-						})
-					}
+			case *types.OnsiteEvent:
+				res.Details.Rooms = make([]response.ResponseOnsiteRoom, 0, len(e.Rooms))
+				for _, room := range e.Rooms {
+					res.Details.Rooms = append(res.Details.Rooms, response.ResponseOnsiteRoom{
+						ID:            room.ID,
+						Name:          room.Name,
+						ConferenceURL: room.ConferenceURL,
+					})
+				}
 			}
 		}
 

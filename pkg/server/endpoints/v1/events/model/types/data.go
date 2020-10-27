@@ -9,8 +9,8 @@ func MakeInitialData() []Event {
 		christmasOnsite2020.BaseEvent.name = "Christmas Onsite 2020"
 		christmasOnsite2020.Rooms = append(christmasOnsite2020.Rooms, []OnsiteEventRoom{
 			{
-				ID: "some-room",
-				Name: "Some room",
+				ID:            "some-room",
+				Name:          "Some room",
 				ConferenceURL: "https://www.giantswarm.io",
 			},
 		}...)

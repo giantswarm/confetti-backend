@@ -71,14 +71,13 @@ func (e *Endpoint) Endpoint() atreugo.View {
 			res.Events = make([]ResponseEvent, 0, len(events))
 			for _, e := range events {
 				res.Events = append(res.Events, ResponseEvent{
-					Active: e.Active(),
-					ID: e.ID(),
-					Name: e.Name(),
-					EventType : string(e.Type()),
+					Active:    e.Active(),
+					ID:        e.ID(),
+					Name:      e.Name(),
+					EventType: string(e.Type()),
 				})
 			}
 		}
-
 
 		return ctx.JSONResponse(res, http.StatusOK)
 	}
@@ -106,7 +105,7 @@ func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middlewar
 	var service *searcher.Service
 	{
 		c := searcher.ServiceConfig{
-			Flags: flags,
+			Flags:      flags,
 			Repository: repository,
 		}
 		service, err = searcher.NewService(c)

@@ -25,7 +25,7 @@ type EndpointConfig struct {
 }
 
 type Endpoint struct {
-	Users *users.Endpoint
+	Users  *users.Endpoint
 	Events *events.Endpoint
 
 	flags      *flags.Flags
@@ -51,7 +51,7 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	}
 
 	endpoint := &Endpoint{
-		Users: usersEndpoint,
+		Users:  usersEndpoint,
 		Events: eventsEndpoint,
 
 		flags:      c.Flags,
@@ -119,7 +119,7 @@ func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware)
 	var service *events.Service
 	{
 		c := events.ServiceConfig{
-			Flags: flags,
+			Flags:      flags,
 			Repository: repository,
 		}
 		service, err = events.NewService(c)

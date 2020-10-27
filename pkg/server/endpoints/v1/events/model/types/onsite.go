@@ -1,6 +1,4 @@
-package eventtypes
-
-import "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model"
+package types
 
 const (
 	eventType = "onsite"
@@ -15,16 +13,20 @@ type OnsiteEventRoom struct {
 }
 
 type OnsiteEvent struct {
-	*model.BaseEvent
+	*BaseEvent
 	Rooms []OnsiteEventRoom
 }
 
-func (oe *OnsiteEvent) Type() model.EventType {
+func (oe *OnsiteEvent) Type() EventType {
 	return eventType
 }
 
 func NewOnsiteEvent() *OnsiteEvent {
-	e := &OnsiteEvent{}
+	be := &BaseEvent{}
+
+	e := &OnsiteEvent{
+		BaseEvent: be,
+	}
 
 	return e
 }

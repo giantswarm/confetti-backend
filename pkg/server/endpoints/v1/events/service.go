@@ -3,6 +3,7 @@ package events
 import (
 	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model"
+	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model/types"
 	"github.com/giantswarm/microerror"
 )
 
@@ -30,5 +31,14 @@ func NewService(c ServiceConfig) (*Service, error) {
 	}
 
 	return service, nil
+}
+
+func (s *Service) GetEvents() ([]types.Event, error) {
+	events, err := s.repository.FindAll()
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
+	return events, nil
 }
 

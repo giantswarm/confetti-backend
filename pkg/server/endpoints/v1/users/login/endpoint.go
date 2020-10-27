@@ -59,12 +59,7 @@ func (e *Endpoint) Endpoint() atreugo.View {
 			Token: token,
 		}
 
-		err = ctx.JSONResponse(res, http.StatusOK)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		return nil
+		return ctx.JSONResponse(res, http.StatusOK)
 	}
 }
 

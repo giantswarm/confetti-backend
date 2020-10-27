@@ -51,7 +51,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 			LogOutput:        r.stderr,
 			GracefulShutdown: true,
 			ErrorView: func(ctx *atreugo.RequestCtx, err error, statusCode int) {
-				_ = ctx.JSONResponse(atreugo.JSON{"code": statusCode, "msg": err.Error()}, statusCode)
+				ctx.JSONResponse(atreugo.JSON{"code": statusCode, "msg": err.Error()}, statusCode)
 			},
 		}
 		atreugoServer = atreugo.New(c)

@@ -50,19 +50,38 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 
 func (e *Endpoint) Endpoint() atreugo.View {
 	return func(ctx *atreugo.RequestCtx) error {
-		res := Response{}
-
-		err := ctx.JSONResponse(res, http.StatusOK)
+		events, err := e.service.GetEvents()
 		if err != nil {
-			return microerror.Mask(err)
+			rErr := ctx.ErrorResponse(microerror.Mask(err), http.StatusInternalServerError)
+			if rErr != nil {
+				return microerror.Mask(err)
+			}
 		}
 
-		return nil
+		res := Response{}
+		{
+			res.Events = make([]ResponseEvent, 0, len(events))
+			for _, e := range events {
+				res.Events = append(res.Events, ResponseEvent{
+					Active: e.Active(),
+					ID: e.ID(),
+					Name: e.Name(),
+					EventType : string(e.Type()),
+				})
+			}
+		}
+
+
+		return ctx.JSONResponse(res, http.StatusOK)
 	}
 }
 
 func (e *Endpoint) Middlewares() atreugo.Middlewares {
-	return atreugo.Middlewares{}
+	return atreugo.Middlewares{
+		Before: []atreugo.Middleware{
+			e.middleware.Authentication.Middleware,
+		},
+	}
 }
 
 func (e *Endpoint) Path() string {

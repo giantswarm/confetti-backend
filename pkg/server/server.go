@@ -91,6 +91,11 @@ func New(c Config) (*Server, error) {
 			v1Endpoint.Events.Path(),
 			v1Endpoint.Events.Endpoint(),
 		).Middlewares(v1Endpoint.Events.Middlewares())
+		group.Path(
+			v1Endpoint.Events.Searcher.Method(),
+			v1Endpoint.Events.Searcher.Path(),
+			v1Endpoint.Events.Searcher.Endpoint(),
+		).Middlewares(v1Endpoint.Events.Searcher.Middlewares())
 	}
 
 	return s, nil

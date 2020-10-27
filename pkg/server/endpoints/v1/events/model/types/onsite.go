@@ -4,10 +4,8 @@ const (
 	eventType = "onsite"
 )
 
-type OnsiteEventRoomID string
-
 type OnsiteEventRoom struct {
-	ID OnsiteEventRoomID
+	ID string
 	Name string
 	ConferenceURL string
 }

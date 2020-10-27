@@ -8,6 +8,7 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/users"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
 )
@@ -24,6 +25,7 @@ type EndpointConfig struct {
 
 type Endpoint struct {
 	Users *users.Endpoint
+	Events *events.Endpoint
 
 	flags      *flags.Flags
 	middleware *middleware.Middleware
@@ -42,8 +44,14 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 		return nil, microerror.Mask(err)
 	}
 
+	eventsEndpoint, err := createEventsEndpoint(c.Flags, c.Middleware)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
+
 	endpoint := &Endpoint{
 		Users: usersEndpoint,
+		Events: eventsEndpoint,
 
 		flags:      c.Flags,
 		middleware: c.Middleware,
@@ -85,6 +93,36 @@ func createUsersEndpoint(flags *flags.Flags, middleware *middleware.Middleware) 
 			Middleware: middleware,
 		}
 		endpoint, err = users.NewEndpoint(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	return endpoint, nil
+}
+
+func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*events.Endpoint, error) {
+	var err error
+
+	var service *events.Service
+	{
+		c := events.ServiceConfig{
+			Flags: flags,
+		}
+		service, err = events.NewService(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	var endpoint *events.Endpoint
+	{
+		c := events.EndpointConfig{
+			Flags:      flags,
+			Service:    service,
+			Middleware: middleware,
+		}
+		endpoint, err = events.NewEndpoint(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}

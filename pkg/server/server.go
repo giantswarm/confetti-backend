@@ -74,6 +74,7 @@ func New(c Config) (*Server, error) {
 			v1Endpoint.Path(),
 			v1Endpoint.Endpoint(),
 		).Middlewares(v1Endpoint.Middlewares())
+
 		group.Path(
 			v1Endpoint.Users.Method(),
 			v1Endpoint.Users.Path(),
@@ -84,6 +85,12 @@ func New(c Config) (*Server, error) {
 			v1Endpoint.Users.Login.Path(),
 			v1Endpoint.Users.Login.Endpoint(),
 		).Middlewares(v1Endpoint.Users.Login.Middlewares())
+
+		group.Path(
+			v1Endpoint.Events.Method(),
+			v1Endpoint.Events.Path(),
+			v1Endpoint.Events.Endpoint(),
+		).Middlewares(v1Endpoint.Events.Middlewares())
 	}
 
 	return s, nil

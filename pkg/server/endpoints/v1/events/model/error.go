@@ -10,3 +10,12 @@ var invalidConfigError = &microerror.Error{
 func IsInvalidConfig(err error) bool {
 	return microerror.Cause(err) == invalidConfigError
 }
+
+var notFoundError = &microerror.Error{
+	Kind: "notFoundError",
+}
+
+// IsInvalidParamsError asserts notFoundError.
+func IsNotFoundError(err error) bool {
+	return microerror.Cause(err) == notFoundError
+}

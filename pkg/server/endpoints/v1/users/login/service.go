@@ -18,6 +18,10 @@ type Service struct {
 }
 
 func NewService(c ServiceConfig) (*Service, error) {
+	if c.Flags == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Flags must not be empty", c)
+	}
+
 	service := &Service{
 		flags: c.Flags,
 	}

@@ -9,6 +9,7 @@ import (
 
 	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events"
+	eventsModel "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/users"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
 )
@@ -104,10 +105,22 @@ func createUsersEndpoint(flags *flags.Flags, middleware *middleware.Middleware) 
 func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*events.Endpoint, error) {
 	var err error
 
+	var repository *eventsModel.Repository
+	{
+		c := eventsModel.RepositoryConfig{
+			Flags: flags,
+		}
+		repository, err = eventsModel.NewRepository(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var service *events.Service
 	{
 		c := events.ServiceConfig{
 			Flags: flags,
+			Repository: repository,
 		}
 		service, err = events.NewService(c)
 		if err != nil {

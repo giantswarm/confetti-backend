@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/atreugo/websocket"
 	"github.com/giantswarm/microerror"
 	"github.com/savsgio/atreugo/v11"
 	"github.com/spf13/cobra"
@@ -48,7 +49,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 			LogName:          project.Name(),
 			Name:             project.Name(),
 			Addr:             fmt.Sprintf("0.0.0.0:%d", f.Port),
-			LogOutput:        r.stderr,
+			LogOutput:        r.stdout,
 			GracefulShutdown: true,
 			ErrorView: func(ctx *atreugo.RequestCtx, err error, statusCode int) {
 				_ = ctx.JSONResponse(atreugo.JSON{"code": statusCode, "msg": err.Error()}, statusCode)
@@ -57,11 +58,20 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 		atreugoServer = atreugo.New(c)
 	}
 
+	var websocketUpgrader *websocket.Upgrader
+	{
+		c := websocket.Config{
+			AllowedOrigins: []string{"*"},
+		}
+		websocketUpgrader = websocket.New(c)
+	}
+
 	var s *server.Server
 	{
 		c := server.Config{
-			Atreugo: atreugoServer,
-			Flags:   f,
+			Atreugo:           atreugoServer,
+			Flags:             f,
+			WebsocketUpgrader: websocketUpgrader,
 		}
 		s, err = server.New(c)
 		if err != nil {

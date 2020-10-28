@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/atreugo/websocket"
 	"github.com/giantswarm/microerror"
 	"github.com/savsgio/atreugo/v11"
 
@@ -11,13 +12,15 @@ import (
 )
 
 type Config struct {
-	Atreugo *atreugo.Atreugo
-	Flags   *flags.Flags
+	Atreugo           *atreugo.Atreugo
+	Flags             *flags.Flags
+	WebsocketUpgrader *websocket.Upgrader
 }
 
 type Server struct {
-	atreugo *atreugo.Atreugo
-	flags   *flags.Flags
+	atreugo           *atreugo.Atreugo
+	flags             *flags.Flags
+	websocketUpgrader *websocket.Upgrader
 }
 
 func New(c Config) (*Server, error) {
@@ -27,12 +30,16 @@ func New(c Config) (*Server, error) {
 	if c.Atreugo == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Atreugo must not be empty", c)
 	}
+	if c.WebsocketUpgrader == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.WebsocketUpgrader must not be empty", c)
+	}
 
 	var err error
 
 	s := &Server{
-		atreugo: c.Atreugo,
-		flags:   c.Flags,
+		atreugo:           c.Atreugo,
+		flags:             c.Flags,
+		websocketUpgrader: c.WebsocketUpgrader,
 	}
 
 	var allMiddlewares *middleware.Middleware

@@ -48,12 +48,7 @@ func (m *Middleware) Middleware(ctx *atreugo.RequestCtx) error {
 	}
 	user.SaveContext(ctx, u)
 
-	err := ctx.Next()
-	if err != nil {
-		return microerror.Mask(err)
-	}
-
-	return nil
+	return ctx.Next()
 }
 
 func (m *Middleware) getAuthorizationToken(ctx *atreugo.RequestCtx) string {

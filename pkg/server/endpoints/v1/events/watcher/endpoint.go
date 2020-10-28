@@ -9,6 +9,7 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
 )
 
@@ -57,6 +58,18 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 
 func (e *Endpoint) Endpoint() atreugo.View {
 	return e.websocketUpgrader.Upgrade(func(ws *websocket.Conn) error {
+		id, ok := ws.UserValue("id").(string)
+		if !ok {
+			return microerror.Mask(invalidParamsError)
+		}
+
+		_, err := e.service.GetEventByID(id)
+		if model.IsNotFoundError(err) {
+			return microerror.Mask(err)
+		} else if err != nil {
+			return microerror.Mask(err)
+		}
+
 		for {
 			msg := make(map[string]string)
 			err := ws.ReadJSON(&msg)
@@ -76,9 +89,10 @@ func (e *Endpoint) Endpoint() atreugo.View {
 
 func (e *Endpoint) Middlewares() atreugo.Middlewares {
 	return atreugo.Middlewares{
-		// Before: []atreugo.Middleware{
-		// 	e.middleware.Authentication.Middleware,
-		// },
+		Before: []atreugo.Middleware{
+			ValidateIDMiddleware(e.service),
+			// 	e.middleware.Authentication.Middleware,
+		},
 	}
 }
 

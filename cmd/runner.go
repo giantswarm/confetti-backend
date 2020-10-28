@@ -61,7 +61,9 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 	var websocketUpgrader *websocket.Upgrader
 	{
 		c := websocket.Config{
-			AllowedOrigins: []string{"*"},
+			AllowedOrigins:  []string{"*"},
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
 		}
 		websocketUpgrader = websocket.New(c)
 	}

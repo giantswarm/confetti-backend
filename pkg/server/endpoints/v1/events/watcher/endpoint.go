@@ -1,16 +1,14 @@
 package watcher
 
 import (
-	"fmt"
-
 	"github.com/atreugo/websocket"
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/flags"
-	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
+	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )
 
 const (
@@ -23,6 +21,7 @@ type EndpointConfig struct {
 	Service           *Service
 	Middleware        *middleware.Middleware
 	WebsocketUpgrader *websocket.Upgrader
+	Hub               *websocketutil.Hub
 }
 
 type Endpoint struct {
@@ -30,6 +29,7 @@ type Endpoint struct {
 	service           *Service
 	middleware        *middleware.Middleware
 	websocketUpgrader *websocket.Upgrader
+	hub               *websocketutil.Hub
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
@@ -45,12 +45,18 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	if c.WebsocketUpgrader == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.WebsocketUpgrader must not be empty", c)
 	}
+	if c.Hub == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Hub must not be empty", c)
+	}
+
+	go c.Hub.Run()
 
 	endpoint := &Endpoint{
 		flags:             c.Flags,
 		service:           c.Service,
 		middleware:        c.Middleware,
 		websocketUpgrader: c.WebsocketUpgrader,
+		hub:               c.Hub,
 	}
 
 	return endpoint, nil
@@ -58,32 +64,12 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 
 func (e *Endpoint) Endpoint() atreugo.View {
 	return e.websocketUpgrader.Upgrade(func(ws *websocket.Conn) error {
-		id, ok := ws.UserValue("id").(string)
-		if !ok {
-			return microerror.Mask(invalidParamsError)
-		}
-
-		_, err := e.service.GetEventByID(id)
-		if model.IsNotFoundError(err) {
-			return microerror.Mask(err)
-		} else if err != nil {
+		err := websocketutil.HandleConnection(ws, e.hub)
+		if err != nil {
 			return microerror.Mask(err)
 		}
 
-		for {
-			msg := make(map[string]string)
-			err := ws.ReadJSON(&msg)
-			if err != nil {
-				return microerror.Mask(err)
-			}
-
-			fmt.Printf("recv: %s\n", msg)
-
-			err = ws.WriteJSON(msg)
-			if err != nil {
-				return microerror.Mask(err)
-			}
-		}
+		return nil
 	})
 }
 

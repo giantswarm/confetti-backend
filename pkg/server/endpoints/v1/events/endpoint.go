@@ -13,6 +13,7 @@ import (
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/searcher"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
+	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )
 
 const (
@@ -148,6 +149,14 @@ func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middlewar
 func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware, repository *model.Repository, websocketUpgrader *websocket.Upgrader) (*watcher.Endpoint, error) {
 	var err error
 
+	var hub *websocketutil.Hub
+	{
+		hub, err = websocketutil.NewHub()
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var service *watcher.Service
 	{
 		c := watcher.ServiceConfig{
@@ -167,6 +176,7 @@ func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware
 			Service:           service,
 			Middleware:        middleware,
 			WebsocketUpgrader: websocketUpgrader,
+			Hub:               hub,
 		}
 		endpoint, err = watcher.NewEndpoint(c)
 		if err != nil {

@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 
+	"github.com/atreugo/websocket"
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/microerror"
@@ -20,16 +21,18 @@ const (
 )
 
 type EndpointConfig struct {
-	Flags      *flags.Flags
-	Middleware *middleware.Middleware
+	Flags             *flags.Flags
+	Middleware        *middleware.Middleware
+	WebsocketUpgrader *websocket.Upgrader
 }
 
 type Endpoint struct {
 	Users  *users.Endpoint
 	Events *events.Endpoint
 
-	flags      *flags.Flags
-	middleware *middleware.Middleware
+	flags             *flags.Flags
+	middleware        *middleware.Middleware
+	websocketUpgrader *websocket.Upgrader
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
@@ -39,13 +42,16 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	if c.Middleware == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Middleware must not be empty", c)
 	}
+	if c.WebsocketUpgrader == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.WebsocketUpgrader must not be empty", c)
+	}
 
 	usersEndpoint, err := createUsersEndpoint(c.Flags, c.Middleware)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	eventsEndpoint, err := createEventsEndpoint(c.Flags, c.Middleware)
+	eventsEndpoint, err := createEventsEndpoint(c.Flags, c.Middleware, c.WebsocketUpgrader)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -54,8 +60,9 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 		Users:  usersEndpoint,
 		Events: eventsEndpoint,
 
-		flags:      c.Flags,
-		middleware: c.Middleware,
+		flags:             c.Flags,
+		middleware:        c.Middleware,
+		websocketUpgrader: c.WebsocketUpgrader,
 	}
 
 	return endpoint, nil
@@ -102,7 +109,7 @@ func createUsersEndpoint(flags *flags.Flags, middleware *middleware.Middleware) 
 	return endpoint, nil
 }
 
-func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*events.Endpoint, error) {
+func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware, websocketUpgrader *websocket.Upgrader) (*events.Endpoint, error) {
 	var err error
 
 	var repository *eventsModel.Repository
@@ -131,9 +138,10 @@ func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware)
 	var endpoint *events.Endpoint
 	{
 		c := events.EndpointConfig{
-			Flags:      flags,
-			Service:    service,
-			Middleware: middleware,
+			Flags:             flags,
+			Service:           service,
+			Middleware:        middleware,
+			WebsocketUpgrader: websocketUpgrader,
 		}
 		endpoint, err = events.NewEndpoint(c)
 		if err != nil {

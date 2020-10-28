@@ -71,7 +71,7 @@ func New(c Config) (*Server, error) {
 	{
 		group := s.atreugo.NewGroupPath("/v1")
 
-		v1Endpoint, err = newV1Endpoint(s.flags, allMiddlewares)
+		v1Endpoint, err = newV1Endpoint(s.flags, allMiddlewares, s.websocketUpgrader)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -103,6 +103,11 @@ func New(c Config) (*Server, error) {
 			v1Endpoint.Events.Searcher.Path(),
 			v1Endpoint.Events.Searcher.Endpoint(),
 		).Middlewares(v1Endpoint.Events.Searcher.Middlewares())
+		group.Path(
+			v1Endpoint.Events.Watcher.Method(),
+			v1Endpoint.Events.Watcher.Path(),
+			v1Endpoint.Events.Watcher.Endpoint(),
+		).Middlewares(v1Endpoint.Events.Watcher.Middlewares())
 	}
 
 	return s, nil
@@ -134,14 +139,15 @@ func newRootEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*ro
 	return endpoint, nil
 }
 
-func newV1Endpoint(flags *flags.Flags, middleware *middleware.Middleware) (*v1.Endpoint, error) {
+func newV1Endpoint(flags *flags.Flags, middleware *middleware.Middleware, websocketUpgrader *websocket.Upgrader) (*v1.Endpoint, error) {
 	var err error
 
 	var endpoint *v1.Endpoint
 	{
 		c := v1.EndpointConfig{
-			Flags:      flags,
-			Middleware: middleware,
+			Flags:             flags,
+			Middleware:        middleware,
+			WebsocketUpgrader: websocketUpgrader,
 		}
 		endpoint, err = v1.NewEndpoint(c)
 		if err != nil {

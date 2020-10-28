@@ -34,3 +34,5 @@ func (be *BaseEvent) Name() string {
 func (be *BaseEvent) Type() EventType {
 	return defaultEventType
 }
+
+var _ Event = new(BaseEvent)

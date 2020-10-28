@@ -178,16 +178,11 @@ github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6So
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
-github.com/savsgio/atreugo v1.0.0 h1:i3fy5nU7CsN6qpkDY8QEjuqsQ99IcHokPpchhTIKH1A=
-github.com/savsgio/atreugo v5.4.0+incompatible h1:CYGL9tYYCA0VCI+8S0iXKQG/hba+rpEMBRkMD7yQOAM=
-github.com/savsgio/atreugo v5.4.0+incompatible/go.mod h1:OBw+Qq0tRhtRi9Nj6Gr5M2cXNmkEGNLCm2UuplxoNnY=
 github.com/savsgio/atreugo/v11 v11.5.1/go.mod h1:OzsoIJpcd8CH1XrXJhaV9XVrDJjuwEpyC9qqTyCNVQg=
 github.com/savsgio/atreugo/v11 v11.5.3 h1:Sc926b9GucRQQR/x6QBctSXNp+YyFkmEiZ1io1i46qU=
 github.com/savsgio/atreugo/v11 v11.5.3/go.mod h1:FG9kRuaDpkMRS82vm9lav7Sgc6O1o2Ulwbh/WajNGs0=
 github.com/savsgio/dictpool v0.0.0-20200608150529-6a3c1a8f6ab2 h1:V+VG/pzeMdwBlS21mJmNkBnQQmZWyuBgYRoz0SVxaVk=
 github.com/savsgio/dictpool v0.0.0-20200608150529-6a3c1a8f6ab2/go.mod h1:LTEdLD+Y+KR4yx9eRMIgciXZo4Od0doGWP/hjgfOlE0=
-github.com/savsgio/go-logger v1.0.0 h1:jiaRvohRr8RwtcK/WDcA/Yp4eaPaarAko3JNPzt1xoQ=
-github.com/savsgio/go-logger v1.0.0/go.mod h1:/ZzTTmB3JJqjZQcLlxTGbwy3fIsLUoYyldsSEL5rU2g=
 github.com/savsgio/go-logger/v2 v2.0.1 h1:MgmsI5hnQFz0n5oX1Do/T9DldTo60guQTGwlRpzk0mk=
 github.com/savsgio/go-logger/v2 v2.0.1/go.mod h1:fog+sZsg75Or4EENyd1jrS/Ps44s39hd6lccqALz0C8=
 github.com/savsgio/gotils v0.0.0-20200608150037-a5f6f5aef16c/go.mod h1:TWNAOTaVzGOXq8RbEvHnhzA/A2sLZzgn0m6URjnukY8=

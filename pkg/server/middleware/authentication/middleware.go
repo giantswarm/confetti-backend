@@ -54,9 +54,13 @@ func (m *Middleware) Middleware(ctx *atreugo.RequestCtx) error {
 func (m *Middleware) getAuthorizationToken(ctx *atreugo.RequestCtx) string {
 	var token string
 	{
+		// Authorization header.
 		auth := ctx.Request.Header.Peek("Authorization")
 		if bytes.HasPrefix(auth, tokenPrefix) {
 			token = string(auth[len(tokenPrefix):])
+		} else {
+			// Parameter in URL.
+			token = string(ctx.URI().QueryArgs().Peek("token"))
 		}
 	}
 

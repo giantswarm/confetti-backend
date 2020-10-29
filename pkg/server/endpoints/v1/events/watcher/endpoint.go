@@ -64,10 +64,18 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 
 func (e *Endpoint) Endpoint() atreugo.View {
 	return e.websocketUpgrader.Upgrade(func(ws *websocket.Conn) error {
-		err := websocketutil.HandleConnection(ws, e.hub)
+		c := websocketutil.ClientConfig{
+			Hub:        e.hub,
+			Connection: ws,
+		}
+
+		client, err := websocketutil.NewClient(c)
 		if err != nil {
 			return microerror.Mask(err)
 		}
+
+		go client.WritePump()
+		client.ReadPump()
 
 		return nil
 	})

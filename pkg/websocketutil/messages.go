@@ -39,3 +39,8 @@ const (
 	// is UTF-8 encoded text.
 	PongMessage = 10
 )
+
+type ClientMessage struct {
+	Client  *Client
+	Payload []byte
+}

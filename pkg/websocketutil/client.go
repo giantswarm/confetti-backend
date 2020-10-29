@@ -60,19 +60,32 @@ func NewClient(config ClientConfig) (*Client, error) {
 		send: make(chan []byte, 256),
 	}
 
-	c.hub.register <- c
+	c.registerToHub()
 
 	return c, nil
 }
 
-// ReadPump pumps messages from the websocket connection to the hub.
+func (c *Client) registerToHub() {
+	clientMessage := ClientMessage{
+		Client: c,
+	}
+	c.hub.register <- clientMessage
+
+	go c.writePump()
+	c.readPump()
+}
+
+// readPump pumps messages from the websocket connection to the hub.
 //
-// The application runs ReadPump in a per-connection goroutine. The application
+// The application runs readPump in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all
 // reads from this goroutine.
-func (c *Client) ReadPump() {
+func (c *Client) readPump() {
 	defer func() {
-		c.hub.unregister <- c
+		clientMessage := ClientMessage{
+			Client: c,
+		}
+		c.hub.unregister <- clientMessage
 		c.conn.Close()
 	}()
 
@@ -89,17 +102,22 @@ func (c *Client) ReadPump() {
 		if err != nil {
 			return
 		}
-		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.hub.broadcast <- message
+
+		clientMessage := ClientMessage{
+			Client:  c,
+			Payload: bytes.TrimSpace(bytes.Replace(message, newline, space, -1)),
+		}
+
+		c.hub.broadcast <- clientMessage
 	}
 }
 
-// WritePump pumps messages from the hub to the websocket connection.
+// writePump pumps messages from the hub to the websocket connection.
 //
-// A goroutine running WritePump is started for each connection. The
+// A goroutine running writePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
-func (c *Client) WritePump() {
+func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -109,10 +127,15 @@ func (c *Client) WritePump() {
 	for {
 		select {
 		case message, ok := <-c.send:
+			if c.conn.Conn == nil {
+				break
+			}
+
 			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The hub closed the channel.
 				_ = c.conn.WriteMessage(CloseMessage, []byte{})
+
 				return
 			}
 

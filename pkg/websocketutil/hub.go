@@ -55,19 +55,28 @@ func (h *Hub) Run() {
 			}
 		case clientMessage := <-h.broadcast:
 			h.hookCollection.Call(EventMessage, clientMessage)
-			for client := range h.clients {
-				select {
-				case client.send <- clientMessage.Payload:
-				default:
-					h.removeClient(client)
-				}
-			}
 		}
 	}
 }
 
 func (h *Hub) On(event Event, callback EventCallback) {
 	h.hookCollection.Register(event, callback)
+}
+
+func (h *Hub) BroadcastAll(message []byte) {
+	for client := range h.clients {
+		h.tryMessageClient(client, message)
+	}
+}
+
+func (h *Hub) BroadcastAllExcept(message []byte, c *Client) {
+	for client := range h.clients {
+		if client == c {
+			continue
+		}
+
+		h.tryMessageClient(client, message)
+	}
 }
 
 func (h *Hub) addClient(client *Client) {
@@ -77,4 +86,12 @@ func (h *Hub) addClient(client *Client) {
 func (h *Hub) removeClient(client *Client) {
 	delete(h.clients, client)
 	close(client.send)
+}
+
+func (h *Hub) tryMessageClient(client *Client, message []byte) {
+	select {
+	case client.send <- message:
+	default:
+		h.removeClient(client)
+	}
 }

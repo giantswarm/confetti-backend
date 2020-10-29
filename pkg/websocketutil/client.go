@@ -65,6 +65,10 @@ func NewClient(config ClientConfig) (*Client, error) {
 	return c, nil
 }
 
+func (c *Client) Emit(payload []byte) {
+	c.send <- payload
+}
+
 func (c *Client) registerToHub() {
 	clientMessage := ClientMessage{
 		Client: c,

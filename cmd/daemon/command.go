@@ -1,12 +1,15 @@
-package cmd
+package daemon
 
 import (
 	"io"
 	"os"
 
 	"github.com/spf13/cobra"
+)
 
-	"github.com/giantswarm/confetti-backend/pkg/project"
+const (
+	name        = "daemon"
+	description = "Run the API server daemon."
 )
 
 type Config struct {
@@ -31,13 +34,10 @@ func New(config Config) (*cobra.Command, error) {
 	}
 
 	c := &cobra.Command{
-		Use:           project.Name(),
-		Short:         project.Description(),
-		Long:          project.Description(),
-		RunE:          r.Run,
-		SilenceUsage:  true,
-		SilenceErrors: true,
-		Version:       project.Version(),
+		Use:   name,
+		Short: description,
+		Long:  description,
+		RunE:  r.Run,
 	}
 
 	f.Init(c)

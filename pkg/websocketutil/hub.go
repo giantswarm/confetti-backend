@@ -89,9 +89,7 @@ func (h *Hub) removeClient(client *Client) {
 }
 
 func (h *Hub) tryMessageClient(client *Client, message []byte) {
-	select {
-	case client.send <- message:
-	default:
+	if isOpen := client.Emit(message); !isOpen {
 		h.removeClient(client)
 	}
 }

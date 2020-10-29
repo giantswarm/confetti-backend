@@ -6,7 +6,12 @@ import (
 )
 
 func HandleConnection(connection *websocket.Conn, hub *Hub) error {
-	client, err := NewClient(hub, connection)
+	c := ClientConfig{
+		Hub:        hub,
+		Connection: connection,
+	}
+
+	client, err := NewClient(c)
 	if err != nil {
 		return microerror.Mask(err)
 	}

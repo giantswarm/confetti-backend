@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/atreugo/websocket"
+	"github.com/giantswarm/microerror"
 )
 
 const (
@@ -26,6 +27,11 @@ var (
 	space   = []byte{' '}
 )
 
+type ClientConfig struct {
+	Hub        *Hub
+	Connection *websocket.Conn
+}
+
 // Client is a middleman between the websocket connection and the hub.
 //
 // Taken from https://github.com/fasthttp/websocket/blob/master/_examples/chat/fasthttp/client.go
@@ -40,14 +46,21 @@ type Client struct {
 	send chan []byte
 }
 
-func NewClient(hub *Hub, connection *websocket.Conn) (*Client, error) {
+func NewClient(config ClientConfig) (*Client, error) {
+	if config.Hub == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Hub must not be empty", config)
+	}
+	if config.Connection == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Connection must not be empty", config)
+	}
+
 	c := &Client{
-		hub:  hub,
-		conn: connection,
+		hub:  config.Hub,
+		conn: config.Connection,
 		send: make(chan []byte, 256),
 	}
 
-	hub.register <- c
+	c.hub.register <- c
 
 	return c, nil
 }

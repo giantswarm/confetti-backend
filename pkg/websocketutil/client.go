@@ -40,12 +40,14 @@ type Client struct {
 	send chan []byte
 }
 
-func NewClient(hub *Hub, connection *websocket.Conn, outChan chan []byte) (*Client, error) {
+func NewClient(hub *Hub, connection *websocket.Conn) (*Client, error) {
 	c := &Client{
 		hub:  hub,
 		conn: connection,
-		send: outChan,
+		send: make(chan []byte, 256),
 	}
+
+	hub.register <- c
 
 	return c, nil
 }

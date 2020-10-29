@@ -6,12 +6,10 @@ import (
 )
 
 func HandleConnection(connection *websocket.Conn, hub *Hub) error {
-	client, err := NewClient(hub, connection, make(chan []byte, 256))
+	client, err := NewClient(hub, connection)
 	if err != nil {
 		return microerror.Mask(err)
 	}
-
-	client.hub.register <- client
 
 	go client.WritePump()
 	client.ReadPump()

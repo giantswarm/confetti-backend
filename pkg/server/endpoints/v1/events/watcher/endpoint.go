@@ -103,7 +103,7 @@ func (e *Endpoint) Middlewares() atreugo.Middlewares {
 	return atreugo.Middlewares{
 		Before: []atreugo.Middleware{
 			e.middleware.Users.Authentication.Middleware(),
-			ValidateIDMiddleware(e.service),
+			e.middleware.Events.ValidateID.Middleware(),
 		},
 	}
 }

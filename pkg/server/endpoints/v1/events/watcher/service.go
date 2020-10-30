@@ -5,7 +5,6 @@ import (
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
-	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
 )
 
 type ServiceConfig struct {
@@ -32,13 +31,4 @@ func NewService(c ServiceConfig) (*Service, error) {
 	}
 
 	return service, nil
-}
-
-func (s *Service) GetEventByID(id string) (eventsModelTypes.Event, error) {
-	event, err := s.models.Events.FindOneByID(id)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	return event, nil
 }

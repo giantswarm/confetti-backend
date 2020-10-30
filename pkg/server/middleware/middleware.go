@@ -5,6 +5,7 @@ import (
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware/cors"
+	"github.com/giantswarm/confetti-backend/pkg/server/middleware/events"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware/users"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
 )
@@ -15,8 +16,9 @@ type Config struct {
 }
 
 type Middleware struct {
-	Users *users.Middleware
-	Cors  *cors.Middleware
+	Events *events.Middleware
+	Users  *users.Middleware
+	Cors   *cors.Middleware
 
 	flags  *flags.Flags
 	models *models.Model
@@ -31,6 +33,19 @@ func New(c Config) (*Middleware, error) {
 	}
 
 	var err error
+
+	var eventsMiddleware *events.Middleware
+	{
+		c := events.Config{
+			Flags:  c.Flags,
+			Models: c.Models,
+		}
+
+		eventsMiddleware, err = events.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
 
 	var usersMiddleware *users.Middleware
 	{
@@ -59,8 +74,9 @@ func New(c Config) (*Middleware, error) {
 	}
 
 	m := &Middleware{
-		Users: usersMiddleware,
-		Cors:  corsMiddleware,
+		Events: eventsMiddleware,
+		Users:  usersMiddleware,
+		Cors:   corsMiddleware,
 
 		flags:  c.Flags,
 		models: c.Models,

@@ -5,15 +5,18 @@ import (
 )
 
 const (
-	flagPort = "port"
+	flagAddress       = "address"
+	flagAllowedOrigin = "allowed-origin"
 )
 
 type flag struct {
-	Port int
+	Address       string
+	AllowedOrigin string
 }
 
 func (f *flag) Init(cmd *cobra.Command) {
-	cmd.PersistentFlags().IntVar(&f.Port, flagPort, 7777, "Set the port that the application will run on.")
+	cmd.PersistentFlags().StringVar(&f.Address, flagAddress, "0.0.0.0:7777", "Set the address that the application will run on.")
+	cmd.PersistentFlags().StringVar(&f.AllowedOrigin, flagAllowedOrigin, "*", "Set the allowed origin for connections.")
 }
 
 func (f *flag) Validate() error {

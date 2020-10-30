@@ -53,6 +53,8 @@ func New(c Config) (*Server, error) {
 		}
 	}
 
+	s.atreugo.UseBefore(allMiddlewares.Cors.Middleware)
+
 	var rootEndpoint *root.Endpoint
 	{
 		rootEndpoint, err = newRootEndpoint(s.flags, allMiddlewares)

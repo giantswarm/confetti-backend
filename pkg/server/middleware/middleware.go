@@ -5,6 +5,7 @@ import (
 
 	"github.com/giantswarm/confetti-backend/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware/authentication"
+	"github.com/giantswarm/confetti-backend/pkg/server/middleware/cors"
 )
 
 type Config struct {
@@ -13,6 +14,7 @@ type Config struct {
 
 type Middleware struct {
 	Authentication *authentication.Middleware
+	Cors           *cors.Middleware
 
 	flags *flags.Flags
 }
@@ -36,8 +38,21 @@ func New(c Config) (*Middleware, error) {
 		}
 	}
 
+	var corsMiddleware *cors.Middleware
+	{
+		c := cors.Config{
+			Flags: c.Flags,
+		}
+
+		corsMiddleware, err = cors.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	m := &Middleware{
 		Authentication: authenticationMiddleware,
+		Cors:           corsMiddleware,
 
 		flags: c.Flags,
 	}

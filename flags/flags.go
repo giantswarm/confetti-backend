@@ -1,7 +1,8 @@
 package flags
 
 type Flags struct {
-	Port int
+	Address       string
+	AllowedOrigin string
 }
 
 func New() *Flags {

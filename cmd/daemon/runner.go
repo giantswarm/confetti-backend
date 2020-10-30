@@ -2,7 +2,6 @@ package daemon
 
 import (
 	"context"
-	"fmt"
 	"io"
 
 	"github.com/atreugo/websocket"
@@ -40,7 +39,8 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 
 	f := globalFlags.New()
 	{
-		f.Port = r.flag.Port
+		f.Address = r.flag.Address
+		f.AllowedOrigin = r.flag.AllowedOrigin
 	}
 
 	var atreugoServer *atreugo.Atreugo
@@ -48,7 +48,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 		c := atreugo.Config{
 			LogName:          project.Name(),
 			Name:             project.Name(),
-			Addr:             fmt.Sprintf("0.0.0.0:%d", f.Port),
+			Addr:             f.Address,
 			LogOutput:        r.stdout,
 			GracefulShutdown: true,
 			ErrorView: func(ctx *atreugo.RequestCtx, err error, statusCode int) {
@@ -61,7 +61,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 	var websocketUpgrader *websocket.Upgrader
 	{
 		c := websocket.Config{
-			AllowedOrigins:  []string{"*"},
+			AllowedOrigins:  []string{f.AllowedOrigin},
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
 		}

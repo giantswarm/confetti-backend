@@ -50,7 +50,6 @@ func (h *Hub) Run() {
 			h.hookCollection.Call(EventConnected, clientMessage)
 		case clientMessage := <-h.unregister:
 			if _, ok := h.clients[clientMessage.Client]; ok {
-				h.hookCollection.Call(EventDisconnected, clientMessage)
 				h.removeClient(clientMessage.Client)
 			}
 		case clientMessage := <-h.broadcast:

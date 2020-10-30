@@ -6,9 +6,9 @@ import (
 )
 
 type EventHandler interface {
-	OnClientConnect(message websocketutil.ClientMessage)
-	OnClientDisconnect(message websocketutil.ClientMessage)
-	OnClientMessage(message websocketutil.ClientMessage)
+	OnClientConnect(eventID string, message websocketutil.ClientMessage)
+	OnClientDisconnect(eventID string, message websocketutil.ClientMessage)
+	OnClientMessage(eventID string, message websocketutil.ClientMessage)
 }
 
 type EventHandlerCollection struct {

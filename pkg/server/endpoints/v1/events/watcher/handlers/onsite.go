@@ -23,14 +23,14 @@ func NewOnsiteEvent(c OnsiteEventConfig) *OnsiteEventHandler {
 	return oeh
 }
 
-func (oeh *OnsiteEventHandler) OnClientConnect(message websocketutil.ClientMessage) {
-	fmt.Println("connected")
+func (oeh *OnsiteEventHandler) OnClientConnect(eventID string, message websocketutil.ClientMessage) {
+	fmt.Printf("connected to %s\n", eventID)
 }
 
-func (oeh *OnsiteEventHandler) OnClientDisconnect(message websocketutil.ClientMessage) {
-	fmt.Println("disconnected")
+func (oeh *OnsiteEventHandler) OnClientDisconnect(eventID string, message websocketutil.ClientMessage) {
+	fmt.Printf("disconnected from %s\n", eventID)
 }
 
-func (oeh *OnsiteEventHandler) OnClientMessage(message websocketutil.ClientMessage) {
+func (oeh *OnsiteEventHandler) OnClientMessage(eventID string, message websocketutil.ClientMessage) {
 	fmt.Println(message.Payload)
 }

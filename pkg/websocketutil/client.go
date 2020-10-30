@@ -75,6 +75,14 @@ func (c *Client) Emit(payload []byte) bool {
 	return true
 }
 
+func (c *Client) GetUserValue(key string) interface{} {
+	return c.conn.UserValue(key)
+}
+
+func (c *Client) SaveUserValue(key string, value interface{}) {
+	c.conn.SetUserValue(key, value)
+}
+
 func (c *Client) registerToHub() {
 	clientMessage := ClientMessage{
 		Client: c,
@@ -95,8 +103,8 @@ func (c *Client) readPump() {
 		clientMessage := ClientMessage{
 			Client: c,
 		}
+		c.hub.hookCollection.Call(EventDisconnected, clientMessage)
 		c.hub.unregister <- clientMessage
-		c.conn.Close()
 	}()
 
 	c.conn.SetReadLimit(maxMessageSize)
@@ -131,7 +139,6 @@ func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		c.conn.Close()
 	}()
 
 	for {
@@ -140,7 +147,6 @@ func (c *Client) writePump() {
 			if c.conn.Conn == nil {
 				break
 			}
-
 			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The hub closed the channel.
@@ -166,6 +172,9 @@ func (c *Client) writePump() {
 				return
 			}
 		case <-ticker.C:
+			if c.conn.Conn == nil {
+				break
+			}
 			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.conn.WriteMessage(PingMessage, nil); err != nil {
 				return

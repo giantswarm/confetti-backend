@@ -50,19 +50,27 @@ func NewService(c ServiceConfig) (*Service, error) {
 }
 
 func (s *Service) HandleClientConnect(message websocketutil.ClientMessage) {
+	id := s.getEventID(message)
 	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
-		eventHandler.OnClientConnect(message)
+		eventHandler.OnClientConnect(id, message)
 	})
 }
 
 func (s *Service) HandleClientDisconnect(message websocketutil.ClientMessage) {
+	id := s.getEventID(message)
 	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
-		eventHandler.OnClientDisconnect(message)
+		eventHandler.OnClientDisconnect(id, message)
 	})
 }
 
 func (s *Service) HandleClientMessage(message websocketutil.ClientMessage) {
+	id := s.getEventID(message)
 	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
-		eventHandler.OnClientMessage(message)
+		eventHandler.OnClientMessage(id, message)
 	})
+}
+
+func (s *Service) getEventID(message websocketutil.ClientMessage) string {
+	// ID validation is already done in middleware.
+	return message.Client.GetUserValue("id").(string)
 }

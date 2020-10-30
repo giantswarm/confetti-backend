@@ -117,15 +117,12 @@ func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEven
 			delete(event.Lobby, message.User)
 		}
 
-		payload = payloads.MessagePayload{
-			MessageType: onsitePayload.OnsiteRoomJoinSuccess,
-			Data: payloads.MessagePayloadData{
-				Message: fmt.Sprintf("Joined room with ID '%s' successfully.", room.ID),
-				OnsitePayload: onsitePayload.OnsitePayload{
-					RoomID: room.ID,
-				},
-			},
-		}
+		payload = roomMessagePayload(
+			onsitePayload.OnsiteRoomJoinSuccess,
+			fmt.Sprintf("Joined room with ID '%s' successfully.", room.ID),
+			room.ID,
+			nil,
+		)
 
 		success = true
 
@@ -133,15 +130,12 @@ func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEven
 	}
 
 	if !success {
-		payload = payloads.MessagePayload{
-			MessageType: onsitePayload.OnsiteRoomJoinError,
-			Data: payloads.MessagePayloadData{
-				Message: fmt.Sprintf("Room with ID '%s' doesn't exist.", messagePayload.Data.RoomID),
-				OnsitePayload: onsitePayload.OnsitePayload{
-					RoomID: messagePayload.Data.RoomID,
-				},
-			},
-		}
+		payload = roomMessagePayload(
+			onsitePayload.OnsiteRoomJoinError,
+			fmt.Sprintf("Room with ID '%s' doesn't exist.", messagePayload.Data.RoomID),
+			messagePayload.Data.RoomID,
+			nil,
+		)
 
 		payloadBytes, _ = payload.Serialize()
 		message.Message.Client.Emit(payloadBytes)
@@ -154,15 +148,12 @@ func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEven
 
 		_, err = oek.models.Events.Update(event)
 		if err != nil {
-			payload = payloads.MessagePayload{
-				MessageType: onsitePayload.OnsiteRoomJoinError,
-				Data: payloads.MessagePayloadData{
-					Message: fmt.Sprintf("Couldn't join room with ID '%s'.", room.ID),
-					OnsitePayload: onsitePayload.OnsitePayload{
-						RoomID: room.ID,
-					},
-				},
-			}
+			payload = roomMessagePayload(
+				onsitePayload.OnsiteRoomJoinError,
+				fmt.Sprintf("Couldn't join room with ID '%s'.", room.ID),
+				room.ID,
+				nil,
+			)
 		}
 	}
 
@@ -171,15 +162,12 @@ func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEven
 
 	// Broadcast room attendee counter update message.
 	if success {
-		payload = payloads.MessagePayload{
-			MessageType: onsitePayload.OnsiteRoomUpdateAttendeeCounter,
-			Data: payloads.MessagePayloadData{
-				OnsitePayload: onsitePayload.OnsitePayload{
-					RoomID:  room.ID,
-					Counter: toIntPtr(len(room.Attendees)),
-				},
-			},
-		}
+		payload = roomMessagePayload(
+			onsitePayload.OnsiteRoomUpdateAttendeeCounter,
+			"",
+			room.ID,
+			toIntPtr(len(room.Attendees)),
+		)
 		payloadBytes, _ = payload.Serialize()
 		message.Hub.BroadcastAll(payloadBytes)
 	}
@@ -206,15 +194,12 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 			event.Lobby[message.User] = true
 		}
 
-		payload = payloads.MessagePayload{
-			MessageType: onsitePayload.OnsiteRoomLeaveSuccess,
-			Data: payloads.MessagePayloadData{
-				Message: fmt.Sprintf("Left room with ID '%s' successfully.", room.ID),
-				OnsitePayload: onsitePayload.OnsitePayload{
-					RoomID: room.ID,
-				},
-			},
-		}
+		payload = roomMessagePayload(
+			onsitePayload.OnsiteRoomLeaveSuccess,
+			fmt.Sprintf("Left room with ID '%s' successfully.", room.ID),
+			room.ID,
+			nil,
+		)
 
 		success = true
 
@@ -222,15 +207,12 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 	}
 
 	if !success {
-		payload = payloads.MessagePayload{
-			MessageType: onsitePayload.OnsiteRoomLeaveError,
-			Data: payloads.MessagePayloadData{
-				Message: fmt.Sprintf("Room with ID '%s' doesn't exist.", messagePayload.Data.RoomID),
-				OnsitePayload: onsitePayload.OnsitePayload{
-					RoomID: messagePayload.Data.RoomID,
-				},
-			},
-		}
+		payload = roomMessagePayload(
+			onsitePayload.OnsiteRoomLeaveError,
+			fmt.Sprintf("Room with ID '%s' doesn't exist.", messagePayload.Data.RoomID),
+			messagePayload.Data.RoomID,
+			nil,
+		)
 
 		payloadBytes, _ = payload.Serialize()
 		message.Message.Client.Emit(payloadBytes)
@@ -242,15 +224,12 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 		event.Rooms[roomIndex] = room
 		_, err = oek.models.Events.Update(event)
 		if err != nil {
-			payload = payloads.MessagePayload{
-				MessageType: onsitePayload.OnsiteRoomLeaveError,
-				Data: payloads.MessagePayloadData{
-					Message: fmt.Sprintf("Couldn't leave room with ID '%s'.", room.ID),
-					OnsitePayload: onsitePayload.OnsitePayload{
-						RoomID: room.ID,
-					},
-				},
-			}
+			payload = roomMessagePayload(
+				onsitePayload.OnsiteRoomLeaveError,
+				fmt.Sprintf("Couldn't leave room with ID '%s'.", room.ID),
+				room.ID,
+				nil,
+			)
 		}
 	}
 
@@ -259,17 +238,27 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 
 	// Broadcast room attendee counter update message.
 	if success {
-		payload = payloads.MessagePayload{
-			MessageType: onsitePayload.OnsiteRoomUpdateAttendeeCounter,
-			Data: payloads.MessagePayloadData{
-				OnsitePayload: onsitePayload.OnsitePayload{
-					RoomID:  room.ID,
-					Counter: toIntPtr(len(room.Attendees)),
-				},
-			},
-		}
+		payload = roomMessagePayload(
+			onsitePayload.OnsiteRoomUpdateAttendeeCounter,
+			"",
+			room.ID,
+			toIntPtr(len(room.Attendees)),
+		)
 		payloadBytes, _ = payload.Serialize()
 		message.Hub.BroadcastAll(payloadBytes)
+	}
+}
+
+func roomMessagePayload(msgType payloads.MessagePayloadType, message string, roomID string, numOfAttendees *int) payloads.MessagePayload {
+	return payloads.MessagePayload{
+		MessageType: msgType,
+		Data: payloads.MessagePayloadData{
+			Message: message,
+			OnsitePayload: onsitePayload.OnsitePayload{
+				RoomID:  roomID,
+				Counter: numOfAttendees,
+			},
+		},
 	}
 }
 

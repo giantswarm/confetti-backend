@@ -2,6 +2,7 @@ package events
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/giantswarm/microerror"
 
@@ -16,6 +17,7 @@ type RepositoryConfig struct {
 type Repository struct {
 	flags *flags.Flags
 
+	mu     sync.Mutex
 	events []types.Event
 }
 
@@ -34,10 +36,16 @@ func NewRepository(c RepositoryConfig) (*Repository, error) {
 }
 
 func (r *Repository) FindAll() ([]types.Event, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	return r.events, nil
 }
 
 func (r *Repository) FindOneByID(id string) (types.Event, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	_, e, exists := r.findByID(id)
 	if exists {
 		return e, nil
@@ -47,6 +55,9 @@ func (r *Repository) FindOneByID(id string) (types.Event, error) {
 }
 
 func (r *Repository) Update(event types.Event) (types.Event, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	id := event.ID()
 	i, _, exists := r.findByID(id)
 	if exists {

@@ -27,8 +27,10 @@ func New(c Config) (*Middleware, error) {
 	return m, nil
 }
 
-func (m *Middleware) Middleware(ctx *atreugo.RequestCtx) error {
-	ctx.Response.Header.Set("Access-Control-Allow-Origin", m.flags.AllowedOrigin)
+func (m *Middleware) Middleware() atreugo.Middleware {
+	return func(ctx *atreugo.RequestCtx) error {
+		ctx.Response.Header.Set("Access-Control-Allow-Origin", m.flags.AllowedOrigin)
 
-	return ctx.Next()
+		return ctx.Next()
+	}
 }

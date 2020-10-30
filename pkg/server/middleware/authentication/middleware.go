@@ -35,20 +35,22 @@ func New(c Config) (*Middleware, error) {
 	return m, nil
 }
 
-func (m *Middleware) Middleware(ctx *atreugo.RequestCtx) error {
-	token := m.getAuthorizationToken(ctx)
-	if len(token) < 1 {
-		ctx.SetStatusCode(http.StatusUnauthorized)
+func (m *Middleware) Middleware() atreugo.Middleware {
+	return func(ctx *atreugo.RequestCtx) error {
+		token := m.getAuthorizationToken(ctx)
+		if len(token) < 1 {
+			ctx.SetStatusCode(http.StatusUnauthorized)
 
-		return microerror.Maskf(unauthorizedError, "you are not authenticated")
+			return microerror.Maskf(unauthorizedError, "you are not authenticated")
+		}
+
+		u := &user.User{
+			Token: token,
+		}
+		user.SaveContext(ctx, u)
+
+		return ctx.Next()
 	}
-
-	u := &user.User{
-		Token: token,
-	}
-	user.SaveContext(ctx, u)
-
-	return ctx.Next()
 }
 
 func (m *Middleware) getAuthorizationToken(ctx *atreugo.RequestCtx) string {

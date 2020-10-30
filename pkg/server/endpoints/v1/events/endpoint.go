@@ -102,7 +102,7 @@ func (e *Endpoint) Endpoint() atreugo.View {
 func (e *Endpoint) Middlewares() atreugo.Middlewares {
 	return atreugo.Middlewares{
 		Before: []atreugo.Middleware{
-			e.middleware.Authentication.Middleware,
+			e.middleware.Authentication.Middleware(),
 		},
 	}
 }

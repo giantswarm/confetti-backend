@@ -40,7 +40,7 @@ func (oeh *OnsiteEventHandler) OnClientConnect(message handlers.EventHandlerMess
 
 	event.Lobby[message.User] = true
 
-	// TODO(axbarsan): Dispatch success message.
+	oeh.handleInitialStateMessages(event, message)
 }
 
 func (oeh *OnsiteEventHandler) OnClientDisconnect(message handlers.EventHandlerMessage) {
@@ -93,6 +93,24 @@ func (oeh *OnsiteEventHandler) findEventByID(id string) (*eventsModelTypes.Onsit
 	}
 
 	return onsiteEvent, nil
+}
+
+func (oek *OnsiteEventHandler) handleInitialStateMessages(event *eventsModelTypes.OnsiteEvent, message handlers.EventHandlerMessage) {
+	var payloadBytes []byte
+	var payload payloads.MessagePayload
+
+	for _, room := range event.Rooms {
+		payload = roomMessagePayload(
+			onsitePayload.OnsiteRoomUpdateAttendeeCounter,
+			"",
+			room.ID,
+			toIntPtr(len(room.Attendees)),
+		)
+		payloadBytes, _ = payload.Serialize()
+		message.Message.Client.Emit(payloadBytes)
+	}
+
+	// TODO(axbarsan): Dispatch success message.
 }
 
 func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEvent, message handlers.EventHandlerMessage, messagePayload payloads.MessagePayload) {

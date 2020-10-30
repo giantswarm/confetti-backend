@@ -1,8 +1,6 @@
 package watcher
 
 import (
-	"fmt"
-
 	"github.com/atreugo/websocket"
 	"github.com/savsgio/atreugo/v11"
 
@@ -57,19 +55,13 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Hub must not be empty", c)
 	}
 
-	c.Hub.On(websocketutil.EventConnected, func(clientMessage websocketutil.ClientMessage) {
-		fmt.Println("Connected")
-	})
+	{
+		c.Hub.On(websocketutil.EventConnected, c.Service.HandleClientConnect)
+		c.Hub.On(websocketutil.EventDisconnected, c.Service.HandleClientDisconnect)
+		c.Hub.On(websocketutil.EventMessage, c.Service.HandleClientMessage)
 
-	c.Hub.On(websocketutil.EventDisconnected, func(clientMessage websocketutil.ClientMessage) {
-		fmt.Println("Disconnected")
-	})
-
-	c.Hub.On(websocketutil.EventMessage, func(clientMessage websocketutil.ClientMessage) {
-		fmt.Println(clientMessage.Payload)
-	})
-
-	go c.Hub.Run()
+		go c.Hub.Run()
+	}
 
 	endpoint := &Endpoint{
 		flags:             c.Flags,

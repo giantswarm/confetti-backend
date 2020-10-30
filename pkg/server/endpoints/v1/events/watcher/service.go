@@ -4,7 +4,10 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
+	events "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
+	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )
 
 type ServiceConfig struct {
@@ -13,8 +16,9 @@ type ServiceConfig struct {
 }
 
 type Service struct {
-	flags  *flags.Flags
-	models *models.Model
+	flags                  *flags.Flags
+	models                 *models.Model
+	eventHandlerCollection *handlers.EventHandlerCollection
 }
 
 func NewService(c ServiceConfig) (*Service, error) {
@@ -25,10 +29,40 @@ func NewService(c ServiceConfig) (*Service, error) {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
 	}
 
+	var ehc *handlers.EventHandlerCollection
+	{
+		onsiteHandlerConfig := handlers.OnsiteEventConfig{
+			Models: c.Models,
+		}
+		onsiteHandler := handlers.NewOnsiteEvent(onsiteHandlerConfig)
+
+		ehc = handlers.NewEventHandlerCollection()
+		ehc.RegisterHandler(events.NewOnsiteEvent().Type(), onsiteHandler)
+	}
+
 	service := &Service{
-		flags:  c.Flags,
-		models: c.Models,
+		flags:                  c.Flags,
+		models:                 c.Models,
+		eventHandlerCollection: ehc,
 	}
 
 	return service, nil
+}
+
+func (s *Service) HandleClientConnect(message websocketutil.ClientMessage) {
+	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
+		eventHandler.OnClientConnect(message)
+	})
+}
+
+func (s *Service) HandleClientDisconnect(message websocketutil.ClientMessage) {
+	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
+		eventHandler.OnClientDisconnect(message)
+	})
+}
+
+func (s *Service) HandleClientMessage(message websocketutil.ClientMessage) {
+	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
+		eventHandler.OnClientMessage(message)
+	})
 }

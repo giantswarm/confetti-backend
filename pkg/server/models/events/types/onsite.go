@@ -1,5 +1,9 @@
 package events
 
+import (
+	usersModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/users/types"
+)
+
 const (
 	eventType = "onsite"
 )
@@ -9,10 +13,13 @@ type OnsiteEventRoom struct {
 	Name          string
 	Description   string
 	ConferenceURL string
+	Attendees     []*usersModelTypes.User
 }
 
 type OnsiteEvent struct {
 	*BaseEvent
+
+	Lobby []*usersModelTypes.User
 	Rooms []OnsiteEventRoom
 }
 

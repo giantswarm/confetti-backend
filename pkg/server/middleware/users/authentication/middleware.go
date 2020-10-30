@@ -10,6 +10,7 @@ import (
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/context/user"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
+	usersModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/users/types"
 )
 
 var (
@@ -51,7 +52,7 @@ func (m *Middleware) Middleware() atreugo.Middleware {
 			return microerror.Maskf(unauthorizedError, "you are not authenticated")
 		}
 
-		u := &user.User{
+		u := &usersModelTypes.User{
 			Token: token,
 		}
 		user.SaveContext(ctx, u)

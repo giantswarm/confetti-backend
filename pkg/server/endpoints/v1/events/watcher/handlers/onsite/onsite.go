@@ -6,8 +6,11 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers"
+	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads"
+	onsitePayload "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads/onsite"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
 	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
+	"github.com/giantswarm/confetti-backend/pkg/server/models/users/types"
 )
 
 type OnsiteEventConfig struct {
@@ -55,8 +58,27 @@ func (oeh *OnsiteEventHandler) OnClientDisconnect(message handlers.EventHandlerM
 }
 
 func (oeh *OnsiteEventHandler) OnClientMessage(message handlers.EventHandlerMessage) {
-	// TODO(axbarsan): Parse message into custom format.
-	fmt.Println(string(message.Message.Payload))
+	event, err := oeh.findEventByID(message.EventID)
+	if IsInvalidEventType(err) {
+		return
+	} else if err != nil {
+		// TODO(axbarsan): Dispatch error message.
+		return
+	}
+
+	payload := payloads.MessagePayload{}
+	err = payload.Deserialize(message.Message.Payload)
+	if err != nil {
+		fmt.Println(err)
+		// TODO(axbarsan): Dispatch error message.
+	}
+
+	switch payload.MessageType {
+	case onsitePayload.OnsiteRoomJoinRequest:
+		oeh.handleRoomJoin(event, message, payload)
+	case onsitePayload.OnsiteRoomLeaveRequest:
+		oeh.handleRoomLeave(event, message, payload)
+	}
 }
 
 func (oeh *OnsiteEventHandler) findEventByID(id string) (*eventsModelTypes.OnsiteEvent, error) {
@@ -71,4 +93,186 @@ func (oeh *OnsiteEventHandler) findEventByID(id string) (*eventsModelTypes.Onsit
 	}
 
 	return onsiteEvent, nil
+}
+
+func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEvent, message handlers.EventHandlerMessage, messagePayload payloads.MessagePayload) {
+	var success bool
+	var err error
+
+	var payloadBytes []byte
+	var payload payloads.MessagePayload
+
+	var roomIndex int
+	var room eventsModelTypes.OnsiteEventRoom
+	for roomIndex, room = range event.Rooms {
+		if room.ID != messagePayload.Data.RoomID {
+			continue
+		}
+
+		{
+			if room.Attendees == nil {
+				room.Attendees = make(map[*types.User]bool)
+			}
+			room.Attendees[message.User] = true
+			delete(event.Lobby, message.User)
+		}
+
+		payload = payloads.MessagePayload{
+			MessageType: onsitePayload.OnsiteRoomJoinSuccess,
+			Data: payloads.MessagePayloadData{
+				Message: fmt.Sprintf("Joined room with ID '%s' successfully.", room.ID),
+				OnsitePayload: onsitePayload.OnsitePayload{
+					RoomID: room.ID,
+				},
+			},
+		}
+
+		success = true
+
+		break
+	}
+
+	if !success {
+		payload = payloads.MessagePayload{
+			MessageType: onsitePayload.OnsiteRoomJoinError,
+			Data: payloads.MessagePayloadData{
+				Message: fmt.Sprintf("Room with ID '%s' doesn't exist.", messagePayload.Data.RoomID),
+				OnsitePayload: onsitePayload.OnsitePayload{
+					RoomID: messagePayload.Data.RoomID,
+				},
+			},
+		}
+
+		payloadBytes, _ = payload.Serialize()
+		message.Message.Client.Emit(payloadBytes)
+
+		return
+	}
+
+	{
+		event.Rooms[roomIndex] = room
+
+		_, err = oek.models.Events.Update(event)
+		if err != nil {
+			payload = payloads.MessagePayload{
+				MessageType: onsitePayload.OnsiteRoomJoinError,
+				Data: payloads.MessagePayloadData{
+					Message: fmt.Sprintf("Couldn't join room with ID '%s'.", room.ID),
+					OnsitePayload: onsitePayload.OnsitePayload{
+						RoomID: room.ID,
+					},
+				},
+			}
+		}
+	}
+
+	payloadBytes, _ = payload.Serialize()
+	message.Message.Client.Emit(payloadBytes)
+
+	// Broadcast room attendee counter update message.
+	if success {
+		payload = payloads.MessagePayload{
+			MessageType: onsitePayload.OnsiteRoomUpdateAttendeeCounter,
+			Data: payloads.MessagePayloadData{
+				OnsitePayload: onsitePayload.OnsitePayload{
+					RoomID:  room.ID,
+					Counter: toIntPtr(len(room.Attendees)),
+				},
+			},
+		}
+		payloadBytes, _ = payload.Serialize()
+		message.Hub.BroadcastAll(payloadBytes)
+	}
+}
+
+func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEvent, message handlers.EventHandlerMessage, messagePayload payloads.MessagePayload) {
+	var success bool
+	var err error
+
+	var payloadBytes []byte
+	var payload payloads.MessagePayload
+
+	var roomIndex int
+	var room eventsModelTypes.OnsiteEventRoom
+	for roomIndex, room = range event.Rooms {
+		if room.ID != messagePayload.Data.RoomID {
+			continue
+		}
+
+		{
+			if room.Attendees != nil {
+				delete(room.Attendees, message.User)
+			}
+			event.Lobby[message.User] = true
+		}
+
+		payload = payloads.MessagePayload{
+			MessageType: onsitePayload.OnsiteRoomLeaveSuccess,
+			Data: payloads.MessagePayloadData{
+				Message: fmt.Sprintf("Left room with ID '%s' successfully.", room.ID),
+				OnsitePayload: onsitePayload.OnsitePayload{
+					RoomID: room.ID,
+				},
+			},
+		}
+
+		success = true
+
+		break
+	}
+
+	if !success {
+		payload = payloads.MessagePayload{
+			MessageType: onsitePayload.OnsiteRoomLeaveError,
+			Data: payloads.MessagePayloadData{
+				Message: fmt.Sprintf("Room with ID '%s' doesn't exist.", messagePayload.Data.RoomID),
+				OnsitePayload: onsitePayload.OnsitePayload{
+					RoomID: messagePayload.Data.RoomID,
+				},
+			},
+		}
+
+		payloadBytes, _ = payload.Serialize()
+		message.Message.Client.Emit(payloadBytes)
+
+		return
+	}
+
+	{
+		event.Rooms[roomIndex] = room
+		_, err = oek.models.Events.Update(event)
+		if err != nil {
+			payload = payloads.MessagePayload{
+				MessageType: onsitePayload.OnsiteRoomLeaveError,
+				Data: payloads.MessagePayloadData{
+					Message: fmt.Sprintf("Couldn't leave room with ID '%s'.", room.ID),
+					OnsitePayload: onsitePayload.OnsitePayload{
+						RoomID: room.ID,
+					},
+				},
+			}
+		}
+	}
+
+	payloadBytes, _ = payload.Serialize()
+	message.Message.Client.Emit(payloadBytes)
+
+	// Broadcast room attendee counter update message.
+	if success {
+		payload = payloads.MessagePayload{
+			MessageType: onsitePayload.OnsiteRoomUpdateAttendeeCounter,
+			Data: payloads.MessagePayloadData{
+				OnsitePayload: onsitePayload.OnsitePayload{
+					RoomID:  room.ID,
+					Counter: toIntPtr(len(room.Attendees)),
+				},
+			},
+		}
+		payloadBytes, _ = payload.Serialize()
+		message.Hub.BroadcastAll(payloadBytes)
+	}
+}
+
+func toIntPtr(d int) *int {
+	return &d
 }

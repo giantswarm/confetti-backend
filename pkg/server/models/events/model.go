@@ -62,6 +62,8 @@ func (r *Repository) Update(event types.Event) (types.Event, error) {
 	i, _, exists := r.findByID(id)
 	if exists {
 		r.events[i] = event
+
+		return event, nil
 	}
 
 	return nil, microerror.Maskf(notFoundError, fmt.Sprintf("couldn't find any event with ID %s", id))

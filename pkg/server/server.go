@@ -43,23 +43,24 @@ func New(c Config) (*Server, error) {
 		websocketUpgrader: c.WebsocketUpgrader,
 	}
 
-	var allMiddlewares *middleware.Middleware
-	{
-		c := middleware.Config{
-			Flags: s.flags,
-		}
-		allMiddlewares, err = middleware.New(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var allModels *models.Model
 	{
 		c := models.Config{
 			Flags: s.flags,
 		}
 		allModels, err = models.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
+	var allMiddlewares *middleware.Middleware
+	{
+		c := middleware.Config{
+			Flags:  s.flags,
+			Models: allModels,
+		}
+		allMiddlewares, err = middleware.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}

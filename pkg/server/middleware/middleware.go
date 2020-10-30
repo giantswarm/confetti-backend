@@ -6,22 +6,28 @@ import (
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware/authentication"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware/cors"
+	"github.com/giantswarm/confetti-backend/pkg/server/models"
 )
 
 type Config struct {
-	Flags *flags.Flags
+	Flags  *flags.Flags
+	Models *models.Model
 }
 
 type Middleware struct {
 	Authentication *authentication.Middleware
 	Cors           *cors.Middleware
 
-	flags *flags.Flags
+	flags  *flags.Flags
+	models *models.Model
 }
 
 func New(c Config) (*Middleware, error) {
 	if c.Flags == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Flags must not be empty", c)
+	}
+	if c.Models == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
 	}
 
 	var err error
@@ -29,7 +35,8 @@ func New(c Config) (*Middleware, error) {
 	var authenticationMiddleware *authentication.Middleware
 	{
 		c := authentication.Config{
-			Flags: c.Flags,
+			Flags:  c.Flags,
+			Models: c.Models,
 		}
 
 		authenticationMiddleware, err = authentication.New(c)
@@ -41,7 +48,8 @@ func New(c Config) (*Middleware, error) {
 	var corsMiddleware *cors.Middleware
 	{
 		c := cors.Config{
-			Flags: c.Flags,
+			Flags:  c.Flags,
+			Models: c.Models,
 		}
 
 		corsMiddleware, err = cors.New(c)
@@ -54,7 +62,8 @@ func New(c Config) (*Middleware, error) {
 		Authentication: authenticationMiddleware,
 		Cors:           corsMiddleware,
 
-		flags: c.Flags,
+		flags:  c.Flags,
+		models: c.Models,
 	}
 
 	return m, nil

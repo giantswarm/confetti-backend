@@ -9,6 +9,7 @@ import (
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/context/user"
+	"github.com/giantswarm/confetti-backend/pkg/server/models"
 )
 
 var (
@@ -16,20 +17,26 @@ var (
 )
 
 type Config struct {
-	Flags *flags.Flags
+	Flags  *flags.Flags
+	Models *models.Model
 }
 
 type Middleware struct {
-	flags *flags.Flags
+	flags  *flags.Flags
+	models *models.Model
 }
 
 func New(c Config) (*Middleware, error) {
 	if c.Flags == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Flags must not be empty", c)
 	}
+	if c.Models == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
+	}
 
 	m := &Middleware{
-		flags: c.Flags,
+		flags:  c.Flags,
+		models: c.Models,
 	}
 
 	return m, nil

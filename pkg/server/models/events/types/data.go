@@ -1,4 +1,4 @@
-package types
+package events
 
 func MakeInitialData() []Event {
 	var christmasOnsite2020 *OnsiteEvent

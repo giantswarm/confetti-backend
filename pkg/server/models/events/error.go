@@ -1,4 +1,4 @@
-package model
+package events
 
 import "github.com/giantswarm/microerror"
 

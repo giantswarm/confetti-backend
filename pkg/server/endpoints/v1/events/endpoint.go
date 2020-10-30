@@ -9,10 +9,10 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
-	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/searcher"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
+	eventsModel "github.com/giantswarm/confetti-backend/pkg/server/models/events"
 	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )
 
@@ -115,7 +115,7 @@ func (e *Endpoint) Method() string {
 	return method
 }
 
-func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware, repository *model.Repository) (*searcher.Endpoint, error) {
+func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware, repository *eventsModel.Repository) (*searcher.Endpoint, error) {
 	var err error
 
 	var service *searcher.Service
@@ -146,7 +146,7 @@ func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middlewar
 	return endpoint, nil
 }
 
-func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware, repository *model.Repository, websocketUpgrader *websocket.Upgrader) (*watcher.Endpoint, error) {
+func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware, repository *eventsModel.Repository, websocketUpgrader *websocket.Upgrader) (*watcher.Endpoint, error) {
 	var err error
 
 	var hub *websocketutil.Hub

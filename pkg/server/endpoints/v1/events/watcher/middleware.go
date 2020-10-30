@@ -6,7 +6,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/savsgio/atreugo/v11"
 
-	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model"
+	eventsModel "github.com/giantswarm/confetti-backend/pkg/server/models/events"
 )
 
 func ValidateIDMiddleware(service *Service) atreugo.Middleware {
@@ -19,7 +19,7 @@ func ValidateIDMiddleware(service *Service) atreugo.Middleware {
 		}
 
 		_, err := service.GetEventByID(id)
-		if model.IsNotFoundError(err) {
+		if eventsModel.IsNotFoundError(err) {
 			ctx.SetStatusCode(http.StatusNotFound)
 
 			return microerror.Mask(err)

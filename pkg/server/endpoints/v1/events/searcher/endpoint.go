@@ -8,10 +8,10 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
-	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model"
-	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/model/types"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/searcher/response"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
+	eventsModel "github.com/giantswarm/confetti-backend/pkg/server/models/events"
+	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
 )
 
 const (
@@ -59,7 +59,7 @@ func (e *Endpoint) Endpoint() atreugo.View {
 		}
 
 		event, err := e.service.GetEventByID(id)
-		if model.IsNotFoundError(err) {
+		if eventsModel.IsNotFoundError(err) {
 			return ctx.ErrorResponse(microerror.Mask(err), http.StatusNotFound)
 		} else if err != nil {
 			return ctx.ErrorResponse(microerror.Mask(err), http.StatusInternalServerError)
@@ -74,7 +74,7 @@ func (e *Endpoint) Endpoint() atreugo.View {
 		{
 			// Add event type-specific details.
 			switch e := event.(type) {
-			case *types.OnsiteEvent:
+			case *eventsModelTypes.OnsiteEvent:
 				res.Details.Rooms = make([]response.ResponseOnsiteRoom, 0, len(e.Rooms))
 				for _, room := range e.Rooms {
 					res.Details.Rooms = append(res.Details.Rooms, response.ResponseOnsiteRoom{

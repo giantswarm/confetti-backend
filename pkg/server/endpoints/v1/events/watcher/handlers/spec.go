@@ -9,6 +9,7 @@ type EventHandlerMessage struct {
 	EventID string
 	User    *usersModelTypes.User
 	Message websocketutil.ClientMessage
+	Hub     *websocketutil.Hub
 }
 
 type EventHandler interface {

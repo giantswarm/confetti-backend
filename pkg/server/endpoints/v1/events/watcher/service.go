@@ -86,6 +86,7 @@ func (s *Service) HandleClientConnect(message websocketutil.ClientMessage) {
 		EventID: s.getEventID(message),
 		User:    s.getUser(message),
 		Message: message,
+		Hub:     s.hub,
 	}
 	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
 		eventHandler.OnClientConnect(handlerMessage)
@@ -97,6 +98,7 @@ func (s *Service) HandleClientDisconnect(message websocketutil.ClientMessage) {
 		EventID: s.getEventID(message),
 		User:    s.getUser(message),
 		Message: message,
+		Hub:     s.hub,
 	}
 	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
 		eventHandler.OnClientDisconnect(handlerMessage)
@@ -108,6 +110,7 @@ func (s *Service) HandleClientMessage(message websocketutil.ClientMessage) {
 		EventID: s.getEventID(message),
 		User:    s.getUser(message),
 		Message: message,
+		Hub:     s.hub,
 	}
 	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
 		eventHandler.OnClientMessage(handlerMessage)

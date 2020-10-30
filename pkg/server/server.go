@@ -5,7 +5,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/savsgio/atreugo/v11"
 
-	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/root"
 	v1 "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"

@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware/authentication"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware/cors"
 )

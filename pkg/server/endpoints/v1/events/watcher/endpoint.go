@@ -8,7 +8,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
 	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )

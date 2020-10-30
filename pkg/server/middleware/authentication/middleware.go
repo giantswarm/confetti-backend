@@ -7,7 +7,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/savsgio/atreugo/v11"
 
-	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/context/user"
 )
 

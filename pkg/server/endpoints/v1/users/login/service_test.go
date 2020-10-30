@@ -3,7 +3,7 @@ package login
 import (
 	"testing"
 
-	"github.com/giantswarm/confetti-backend/flags"
+	"github.com/giantswarm/confetti-backend/internal/flags"
 )
 
 func TestService_generateToken(t *testing.T) {

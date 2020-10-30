@@ -131,8 +131,13 @@ func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEven
 			if room.Attendees == nil {
 				room.Attendees = make(map[*types.User]bool)
 			}
-			room.Attendees[message.User] = true
-			delete(event.Lobby, message.User)
+			if _, ok := room.Attendees[message.User]; !ok {
+				room.Attendees[message.User] = true
+				delete(event.Lobby, message.User)
+			} else {
+				// User already in room.
+				return
+			}
 		}
 
 		payload = roomMessagePayload(
@@ -206,8 +211,11 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 		}
 
 		{
-			if room.Attendees != nil {
+			if _, ok := room.Attendees[message.User]; ok && room.Attendees != nil {
 				delete(room.Attendees, message.User)
+			} else {
+				// User not in room.
+				return
 			}
 			event.Lobby[message.User] = true
 		}

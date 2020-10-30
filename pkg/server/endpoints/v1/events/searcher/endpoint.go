@@ -80,6 +80,7 @@ func (e *Endpoint) Endpoint() atreugo.View {
 					res.Details.Rooms = append(res.Details.Rooms, response.ResponseOnsiteRoom{
 						ID:            room.ID,
 						Name:          room.Name,
+						Description:   room.Description,
 						ConferenceURL: room.ConferenceURL,
 					})
 				}

@@ -7,6 +7,7 @@ const (
 type OnsiteEventRoom struct {
 	ID            string
 	Name          string
+	Description   string
 	ConferenceURL string
 }
 

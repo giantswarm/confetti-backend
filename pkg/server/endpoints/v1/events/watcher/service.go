@@ -57,9 +57,9 @@ func NewService(c ServiceConfig) (*Service, error) {
 	}
 
 	{
-		c.Hub.On(websocketutil.EventConnected, service.HandleClientConnect)
-		c.Hub.On(websocketutil.EventDisconnected, service.HandleClientDisconnect)
-		c.Hub.On(websocketutil.EventMessage, service.HandleClientMessage)
+		c.Hub.On(websocketutil.EventConnected, service.handleClientConnect)
+		c.Hub.On(websocketutil.EventDisconnected, service.handleClientDisconnect)
+		c.Hub.On(websocketutil.EventMessage, service.handleClientMessage)
 
 		go c.Hub.Run()
 	}
@@ -81,7 +81,7 @@ func (s *Service) NewClient(ws *websocket.Conn) error {
 	return nil
 }
 
-func (s *Service) HandleClientConnect(message websocketutil.ClientMessage) {
+func (s *Service) handleClientConnect(message websocketutil.ClientMessage) {
 	handlerMessage := handlers.EventHandlerMessage{
 		EventID: s.getEventID(message),
 		User:    s.getUser(message),
@@ -93,7 +93,7 @@ func (s *Service) HandleClientConnect(message websocketutil.ClientMessage) {
 	})
 }
 
-func (s *Service) HandleClientDisconnect(message websocketutil.ClientMessage) {
+func (s *Service) handleClientDisconnect(message websocketutil.ClientMessage) {
 	handlerMessage := handlers.EventHandlerMessage{
 		EventID: s.getEventID(message),
 		User:    s.getUser(message),
@@ -105,7 +105,7 @@ func (s *Service) HandleClientDisconnect(message websocketutil.ClientMessage) {
 	})
 }
 
-func (s *Service) HandleClientMessage(message websocketutil.ClientMessage) {
+func (s *Service) handleClientMessage(message websocketutil.ClientMessage) {
 	handlerMessage := handlers.EventHandlerMessage{
 		EventID: s.getEventID(message),
 		User:    s.getUser(message),

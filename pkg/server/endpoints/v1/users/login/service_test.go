@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/models"
 )
 
 func TestService_generateToken(t *testing.T) {
@@ -21,8 +22,17 @@ func TestService_generateToken(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			flags := flags.New()
 
-			c := ServiceConfig{
+			modelsConfig := models.Config{
 				Flags: flags,
+			}
+			models, err := models.New(modelsConfig)
+			if err != nil {
+				t.Fatalf("unexpected error: %s", err.Error())
+			}
+
+			c := ServiceConfig{
+				Flags:  flags,
+				Models: models,
 			}
 			s, err := NewService(c)
 			if err != nil {

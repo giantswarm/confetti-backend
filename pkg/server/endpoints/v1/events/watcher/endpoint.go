@@ -10,6 +10,7 @@ import (
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
+	"github.com/giantswarm/confetti-backend/pkg/server/models"
 	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )
 
@@ -24,6 +25,7 @@ type EndpointConfig struct {
 	Middleware        *middleware.Middleware
 	WebsocketUpgrader *websocket.Upgrader
 	Hub               *websocketutil.Hub
+	Models            *models.Model
 }
 
 type Endpoint struct {
@@ -32,6 +34,7 @@ type Endpoint struct {
 	middleware        *middleware.Middleware
 	websocketUpgrader *websocket.Upgrader
 	hub               *websocketutil.Hub
+	models            *models.Model
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
@@ -43,6 +46,9 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	}
 	if c.Middleware == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Middleware must not be empty", c)
+	}
+	if c.Models == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
 	}
 	if c.WebsocketUpgrader == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.WebsocketUpgrader must not be empty", c)
@@ -69,6 +75,7 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 		flags:             c.Flags,
 		service:           c.Service,
 		middleware:        c.Middleware,
+		models:            c.Models,
 		websocketUpgrader: c.WebsocketUpgrader,
 		hub:               c.Hub,
 	}

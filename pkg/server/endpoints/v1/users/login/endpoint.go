@@ -9,6 +9,7 @@ import (
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
+	"github.com/giantswarm/confetti-backend/pkg/server/models"
 )
 
 const (
@@ -20,12 +21,14 @@ type EndpointConfig struct {
 	Flags      *flags.Flags
 	Service    *Service
 	Middleware *middleware.Middleware
+	Models     *models.Model
 }
 
 type Endpoint struct {
 	flags      *flags.Flags
 	service    *Service
 	middleware *middleware.Middleware
+	models     *models.Model
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
@@ -38,11 +41,15 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	if c.Middleware == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Middleware must not be empty", c)
 	}
+	if c.Models == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
+	}
 
 	endpoint := &Endpoint{
 		flags:      c.Flags,
 		service:    c.Service,
 		middleware: c.Middleware,
+		models:     c.Models,
 	}
 
 	return endpoint, nil

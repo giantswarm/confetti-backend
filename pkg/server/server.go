@@ -9,6 +9,7 @@ import (
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/root"
 	v1 "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
+	"github.com/giantswarm/confetti-backend/pkg/server/models"
 )
 
 type Config struct {
@@ -53,11 +54,22 @@ func New(c Config) (*Server, error) {
 		}
 	}
 
+	var allModels *models.Model
+	{
+		c := models.Config{
+			Flags: s.flags,
+		}
+		allModels, err = models.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	s.atreugo.UseBefore(allMiddlewares.Cors.Middleware())
 
 	var rootEndpoint *root.Endpoint
 	{
-		rootEndpoint, err = newRootEndpoint(s.flags, allMiddlewares)
+		rootEndpoint, err = newRootEndpoint(s.flags, allMiddlewares, allModels)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -73,7 +85,7 @@ func New(c Config) (*Server, error) {
 	{
 		group := s.atreugo.NewGroupPath("/v1")
 
-		v1Endpoint, err = newV1Endpoint(s.flags, allMiddlewares, s.websocketUpgrader)
+		v1Endpoint, err = newV1Endpoint(s.flags, allMiddlewares, s.websocketUpgrader, allModels)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -123,7 +135,7 @@ func (s *Server) Boot() error {
 	return nil
 }
 
-func newRootEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*root.Endpoint, error) {
+func newRootEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model) (*root.Endpoint, error) {
 	var err error
 
 	var endpoint *root.Endpoint
@@ -131,6 +143,7 @@ func newRootEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*ro
 		c := root.EndpointConfig{
 			Flags:      flags,
 			Middleware: middleware,
+			Models:     models,
 		}
 		endpoint, err = root.NewEndpoint(c)
 		if err != nil {
@@ -141,7 +154,7 @@ func newRootEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*ro
 	return endpoint, nil
 }
 
-func newV1Endpoint(flags *flags.Flags, middleware *middleware.Middleware, websocketUpgrader *websocket.Upgrader) (*v1.Endpoint, error) {
+func newV1Endpoint(flags *flags.Flags, middleware *middleware.Middleware, websocketUpgrader *websocket.Upgrader, models *models.Model) (*v1.Endpoint, error) {
 	var err error
 
 	var endpoint *v1.Endpoint
@@ -149,6 +162,7 @@ func newV1Endpoint(flags *flags.Flags, middleware *middleware.Middleware, websoc
 		c := v1.EndpointConfig{
 			Flags:             flags,
 			Middleware:        middleware,
+			Models:            models,
 			WebsocketUpgrader: websocketUpgrader,
 		}
 		endpoint, err = v1.NewEndpoint(c)

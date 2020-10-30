@@ -12,7 +12,7 @@ import (
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/users"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
-	eventsModel "github.com/giantswarm/confetti-backend/pkg/server/models/events"
+	"github.com/giantswarm/confetti-backend/pkg/server/models"
 )
 
 const (
@@ -23,6 +23,7 @@ const (
 type EndpointConfig struct {
 	Flags             *flags.Flags
 	Middleware        *middleware.Middleware
+	Models            *models.Model
 	WebsocketUpgrader *websocket.Upgrader
 }
 
@@ -32,6 +33,7 @@ type Endpoint struct {
 
 	flags             *flags.Flags
 	middleware        *middleware.Middleware
+	models            *models.Model
 	websocketUpgrader *websocket.Upgrader
 }
 
@@ -45,13 +47,16 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	if c.WebsocketUpgrader == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.WebsocketUpgrader must not be empty", c)
 	}
+	if c.Models == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
+	}
 
-	usersEndpoint, err := createUsersEndpoint(c.Flags, c.Middleware)
+	usersEndpoint, err := createUsersEndpoint(c.Flags, c.Middleware, c.Models)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	eventsEndpoint, err := createEventsEndpoint(c.Flags, c.Middleware, c.WebsocketUpgrader)
+	eventsEndpoint, err := createEventsEndpoint(c.Flags, c.Middleware, c.Models, c.WebsocketUpgrader)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -62,6 +67,7 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 
 		flags:             c.Flags,
 		middleware:        c.Middleware,
+		models:            c.Models,
 		websocketUpgrader: c.WebsocketUpgrader,
 	}
 
@@ -91,7 +97,7 @@ func (e *Endpoint) Method() string {
 	return method
 }
 
-func createUsersEndpoint(flags *flags.Flags, middleware *middleware.Middleware) (*users.Endpoint, error) {
+func createUsersEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model) (*users.Endpoint, error) {
 	var err error
 
 	var endpoint *users.Endpoint
@@ -99,6 +105,7 @@ func createUsersEndpoint(flags *flags.Flags, middleware *middleware.Middleware) 
 		c := users.EndpointConfig{
 			Flags:      flags,
 			Middleware: middleware,
+			Models:     models,
 		}
 		endpoint, err = users.NewEndpoint(c)
 		if err != nil {
@@ -109,25 +116,14 @@ func createUsersEndpoint(flags *flags.Flags, middleware *middleware.Middleware) 
 	return endpoint, nil
 }
 
-func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware, websocketUpgrader *websocket.Upgrader) (*events.Endpoint, error) {
+func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model, websocketUpgrader *websocket.Upgrader) (*events.Endpoint, error) {
 	var err error
-
-	var repository *eventsModel.Repository
-	{
-		c := eventsModel.RepositoryConfig{
-			Flags: flags,
-		}
-		repository, err = eventsModel.NewRepository(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
 
 	var service *events.Service
 	{
 		c := events.ServiceConfig{
-			Flags:      flags,
-			Repository: repository,
+			Flags:  flags,
+			Models: models,
 		}
 		service, err = events.NewService(c)
 		if err != nil {
@@ -141,6 +137,7 @@ func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware,
 			Flags:             flags,
 			Service:           service,
 			Middleware:        middleware,
+			Models:            models,
 			WebsocketUpgrader: websocketUpgrader,
 		}
 		endpoint, err = events.NewEndpoint(c)

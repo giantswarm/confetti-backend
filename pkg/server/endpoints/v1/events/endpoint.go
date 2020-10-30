@@ -169,6 +169,7 @@ func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware
 		c := watcher.ServiceConfig{
 			Flags:  flags,
 			Models: models,
+			Hub:    hub,
 		}
 		service, err = watcher.NewService(c)
 		if err != nil {
@@ -184,7 +185,6 @@ func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware
 			Middleware:        middleware,
 			Models:            models,
 			WebsocketUpgrader: websocketUpgrader,
-			Hub:               hub,
 		}
 		endpoint, err = watcher.NewEndpoint(c)
 		if err != nil {

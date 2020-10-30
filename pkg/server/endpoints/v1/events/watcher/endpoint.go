@@ -9,7 +9,6 @@ import (
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
-	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )
 
 const (
@@ -22,7 +21,6 @@ type EndpointConfig struct {
 	Service           *Service
 	Middleware        *middleware.Middleware
 	WebsocketUpgrader *websocket.Upgrader
-	Hub               *websocketutil.Hub
 	Models            *models.Model
 }
 
@@ -31,7 +29,6 @@ type Endpoint struct {
 	service           *Service
 	middleware        *middleware.Middleware
 	websocketUpgrader *websocket.Upgrader
-	hub               *websocketutil.Hub
 	models            *models.Model
 }
 
@@ -45,22 +42,11 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	if c.Middleware == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Middleware must not be empty", c)
 	}
-	if c.Models == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
-	}
 	if c.WebsocketUpgrader == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.WebsocketUpgrader must not be empty", c)
 	}
-	if c.Hub == nil {
-		return nil, microerror.Maskf(invalidConfigError, "%T.Hub must not be empty", c)
-	}
-
-	{
-		c.Hub.On(websocketutil.EventConnected, c.Service.HandleClientConnect)
-		c.Hub.On(websocketutil.EventDisconnected, c.Service.HandleClientDisconnect)
-		c.Hub.On(websocketutil.EventMessage, c.Service.HandleClientMessage)
-
-		go c.Hub.Run()
+	if c.Models == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
 	}
 
 	endpoint := &Endpoint{
@@ -69,7 +55,6 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 		middleware:        c.Middleware,
 		models:            c.Models,
 		websocketUpgrader: c.WebsocketUpgrader,
-		hub:               c.Hub,
 	}
 
 	return endpoint, nil
@@ -77,12 +62,7 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 
 func (e *Endpoint) Endpoint() atreugo.View {
 	return e.websocketUpgrader.Upgrade(func(ws *websocket.Conn) error {
-		c := websocketutil.ClientConfig{
-			Hub:        e.hub,
-			Connection: ws,
-		}
-
-		_, err := websocketutil.NewClient(c)
+		err := e.service.NewClient(ws)
 		if err != nil {
 			return microerror.Mask(err)
 		}

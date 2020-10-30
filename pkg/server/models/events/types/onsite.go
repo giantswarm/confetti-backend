@@ -13,13 +13,13 @@ type OnsiteEventRoom struct {
 	Name          string
 	Description   string
 	ConferenceURL string
-	Attendees     []*usersModelTypes.User
+	Attendees     map[*usersModelTypes.User]bool
 }
 
 type OnsiteEvent struct {
 	*BaseEvent
 
-	Lobby []*usersModelTypes.User
+	Lobby map[*usersModelTypes.User]bool
 	Rooms []OnsiteEventRoom
 }
 
@@ -32,6 +32,7 @@ func NewOnsiteEvent() *OnsiteEvent {
 
 	e := &OnsiteEvent{
 		BaseEvent: be,
+		Lobby:     make(map[*usersModelTypes.User]bool),
 	}
 
 	return e

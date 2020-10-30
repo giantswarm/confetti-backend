@@ -15,7 +15,11 @@ func SaveContext(ctx *atreugo.RequestCtx, u *usersModelTypes.User) {
 }
 
 func FromContext(ctx *atreugo.RequestCtx) (*usersModelTypes.User, bool) {
-	user := ctx.UserValue(key)
+	return FromUserValueGetter(ctx.UserValue)
+}
+
+func FromUserValueGetter(getter func(key string) interface{}) (*usersModelTypes.User, bool) {
+	user := getter(key)
 	if u, ok := user.(*usersModelTypes.User); ok {
 		return u, ok
 	}

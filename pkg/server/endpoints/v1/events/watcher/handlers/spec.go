@@ -2,13 +2,20 @@ package handlers
 
 import (
 	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
+	usersModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/users/types"
 	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )
 
+type EventHandlerMessage struct {
+	EventID string
+	User    *usersModelTypes.User
+	Message websocketutil.ClientMessage
+}
+
 type EventHandler interface {
-	OnClientConnect(eventID string, message websocketutil.ClientMessage)
-	OnClientDisconnect(eventID string, message websocketutil.ClientMessage)
-	OnClientMessage(eventID string, message websocketutil.ClientMessage)
+	OnClientConnect(message EventHandlerMessage)
+	OnClientDisconnect(message EventHandlerMessage)
+	OnClientMessage(message EventHandlerMessage)
 }
 
 type EventHandlerCollection struct {

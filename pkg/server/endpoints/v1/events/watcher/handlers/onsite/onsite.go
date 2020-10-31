@@ -38,8 +38,6 @@ func (oeh *OnsiteEventHandler) OnClientConnect(message handlers.EventHandlerMess
 		return
 	}
 
-	event.Lobby[message.User] = true
-
 	oeh.handleInitialStateMessages(event, message)
 }
 
@@ -52,9 +50,7 @@ func (oeh *OnsiteEventHandler) OnClientDisconnect(message handlers.EventHandlerM
 		return
 	}
 
-	delete(event.Lobby, message.User)
-
-	// TODO(axbarsan): Dispatch disconnect message.
+	oeh.handleFiniteStateMessages(event, message)
 }
 
 func (oeh *OnsiteEventHandler) OnClientMessage(message handlers.EventHandlerMessage) {
@@ -96,6 +92,9 @@ func (oeh *OnsiteEventHandler) findEventByID(id string) (*eventsModelTypes.Onsit
 }
 
 func (oek *OnsiteEventHandler) handleInitialStateMessages(event *eventsModelTypes.OnsiteEvent, message handlers.EventHandlerMessage) {
+	// Join lobby.
+	event.Lobby[message.User] = true
+
 	var payloadBytes []byte
 	var payload payloads.MessagePayload
 
@@ -109,8 +108,49 @@ func (oek *OnsiteEventHandler) handleInitialStateMessages(event *eventsModelType
 		payloadBytes, _ = payload.Serialize()
 		message.Message.Client.Emit(payloadBytes)
 	}
+}
 
-	// TODO(axbarsan): Dispatch success message.
+func (oek *OnsiteEventHandler) handleFiniteStateMessages(event *eventsModelTypes.OnsiteEvent, message handlers.EventHandlerMessage) {
+	// Leave lobby.
+	delete(event.Lobby, message.User)
+
+	var err error
+
+	var payloadBytes []byte
+	var payload payloads.MessagePayload
+
+	var roomIndex int
+	var room eventsModelTypes.OnsiteEventRoom
+	for _, room = range event.Rooms {
+		if _, ok := room.Attendees[message.User]; !ok {
+			// User is not in the room.
+			continue
+		}
+
+		delete(room.Attendees, message.User)
+	}
+
+	{
+		event.Rooms[roomIndex] = room
+		_, err = oek.models.Events.Update(event)
+		if err != nil {
+			// Ignore error, we don't want to send it to the client.
+			return
+		}
+	}
+
+	payloadBytes, _ = payload.Serialize()
+	message.Message.Client.Emit(payloadBytes)
+
+	// Broadcast room attendee counter update message.
+	payload = roomMessagePayload(
+		onsitePayload.OnsiteRoomUpdateAttendeeCounter,
+		"",
+		room.ID,
+		toIntPtr(len(room.Attendees)),
+	)
+	payloadBytes, _ = payload.Serialize()
+	message.Hub.BroadcastAll(payloadBytes)
 }
 
 func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEvent, message handlers.EventHandlerMessage, messagePayload payloads.MessagePayload) {

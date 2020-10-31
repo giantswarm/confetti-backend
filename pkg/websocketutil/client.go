@@ -1,7 +1,7 @@
 package websocketutil
 
 import (
-	"bytes"
+	"sync"
 	"time"
 
 	"github.com/atreugo/websocket"
@@ -22,11 +22,6 @@ const (
 	maxMessageSize = 512
 )
 
-var (
-	newline = []byte{'\n'}
-	space   = []byte{' '}
-)
-
 type ClientConfig struct {
 	Hub        *Hub
 	Connection *websocket.Conn
@@ -44,6 +39,8 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan []byte
+
+	wg sync.WaitGroup
 }
 
 func NewClient(config ClientConfig) (*Client, error) {
@@ -84,6 +81,8 @@ func (c *Client) SaveUserValue(key string, value interface{}) {
 }
 
 func (c *Client) registerToHub() {
+	c.wg.Add(1)
+
 	clientMessage := ClientMessage{
 		Client: c,
 	}
@@ -91,6 +90,8 @@ func (c *Client) registerToHub() {
 
 	go c.writePump()
 	c.readPump()
+
+	c.wg.Wait()
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -103,8 +104,8 @@ func (c *Client) readPump() {
 		clientMessage := ClientMessage{
 			Client: c,
 		}
-		c.hub.hookCollection.Call(EventDisconnected, clientMessage)
 		c.hub.unregister <- clientMessage
+		c.conn.Close()
 	}()
 
 	c.conn.SetReadLimit(maxMessageSize)
@@ -123,9 +124,8 @@ func (c *Client) readPump() {
 
 		clientMessage := ClientMessage{
 			Client:  c,
-			Payload: bytes.TrimSpace(bytes.Replace(message, newline, space, -1)),
+			Payload: message,
 		}
-
 		c.hub.broadcast <- clientMessage
 	}
 }
@@ -139,14 +139,14 @@ func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
+		c.conn.Close()
+
+		c.wg.Done()
 	}()
 
 	for {
 		select {
 		case message, ok := <-c.send:
-			if c.conn.Conn == nil {
-				break
-			}
 			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The hub closed the channel.
@@ -165,9 +165,6 @@ func (c *Client) writePump() {
 				return
 			}
 		case <-ticker.C:
-			if c.conn.Conn == nil {
-				break
-			}
 			_ = c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.conn.WriteMessage(PingMessage, nil); err != nil {
 				return

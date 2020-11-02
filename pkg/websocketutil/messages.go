@@ -40,6 +40,7 @@ const (
 	PongMessage = 10
 )
 
+// ClientMessage is the message sent between the client and the server.
 type ClientMessage struct {
 	Client  *Client
 	Payload []byte

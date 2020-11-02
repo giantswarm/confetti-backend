@@ -7,7 +7,7 @@ import (
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 //
-// Originally from https://github.com/fasthttp/websocket/blob/master/_examples/chat/fasthttp/hub.go
+// Taken from https://github.com/fasthttp/websocket/blob/master/_examples/chat/fasthttp/hub.go
 // and modified to match our need.
 type Hub struct {
 	// Registered clients.
@@ -59,16 +59,21 @@ func (h *Hub) Run() {
 	}
 }
 
+// On adds an event listener for a certain client-specific
+// event.
 func (h *Hub) On(event Event, callback EventCallback) {
 	h.hookCollection.Register(event, callback)
 }
 
+// BroadcastAll sends a message to all connected clients.
 func (h *Hub) BroadcastAll(message []byte) {
 	for client := range h.clients {
 		h.tryMessageClient(client, message)
 	}
 }
 
+// BroadcastAllExcept will send a message to all connected
+// clients, except the one specified.
 func (h *Hub) BroadcastAllExcept(message []byte, c *Client) {
 	for client := range h.clients {
 		if client == c {
@@ -88,6 +93,8 @@ func (h *Hub) removeClient(client *Client) {
 	close(client.send)
 }
 
+// tryMessageClient will try to send a message to a
+// specific client, if the connection is still open.
 func (h *Hub) tryMessageClient(client *Client, message []byte) {
 	if isOpen := client.Emit(message); !isOpen {
 		h.removeClient(client)

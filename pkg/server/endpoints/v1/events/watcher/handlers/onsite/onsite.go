@@ -63,7 +63,7 @@ func (oeh *OnsiteEventHandler) OnClientMessage(message handlers.EventHandlerMess
 	}
 
 	payload := payloads.MessagePayload{}
-	err = payload.Deserialize(message.Message.Payload)
+	err = payload.Deserialize(message.ClientMessage.Payload)
 	if err != nil {
 		fmt.Println(err)
 		// TODO(axbarsan): Dispatch error message.
@@ -106,7 +106,7 @@ func (oek *OnsiteEventHandler) handleInitialStateMessages(event *eventsModelType
 			toIntPtr(len(room.Attendees)),
 		)
 		payloadBytes, _ = payload.Serialize()
-		message.Message.Client.Emit(payloadBytes)
+		message.ClientMessage.Client.Emit(payloadBytes)
 	}
 }
 
@@ -140,7 +140,7 @@ func (oek *OnsiteEventHandler) handleFiniteStateMessages(event *eventsModelTypes
 	}
 
 	payloadBytes, _ = payload.Serialize()
-	message.Message.Client.Emit(payloadBytes)
+	message.ClientMessage.Client.Emit(payloadBytes)
 
 	// Broadcast room attendee counter update message.
 	payload = roomMessagePayload(
@@ -201,7 +201,7 @@ func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEven
 		)
 
 		payloadBytes, _ = payload.Serialize()
-		message.Message.Client.Emit(payloadBytes)
+		message.ClientMessage.Client.Emit(payloadBytes)
 
 		return
 	}
@@ -221,7 +221,7 @@ func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEven
 	}
 
 	payloadBytes, _ = payload.Serialize()
-	message.Message.Client.Emit(payloadBytes)
+	message.ClientMessage.Client.Emit(payloadBytes)
 
 	// Broadcast room attendee counter update message.
 	if success {
@@ -281,7 +281,7 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 		)
 
 		payloadBytes, _ = payload.Serialize()
-		message.Message.Client.Emit(payloadBytes)
+		message.ClientMessage.Client.Emit(payloadBytes)
 
 		return
 	}
@@ -300,7 +300,7 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 	}
 
 	payloadBytes, _ = payload.Serialize()
-	message.Message.Client.Emit(payloadBytes)
+	message.ClientMessage.Client.Emit(payloadBytes)
 
 	// Broadcast room attendee counter update message.
 	if success {
@@ -321,8 +321,8 @@ func roomMessagePayload(msgType payloads.MessagePayloadType, message string, roo
 		Data: payloads.MessagePayloadData{
 			Message: message,
 			OnsitePayload: onsitePayload.OnsitePayload{
-				RoomID:  roomID,
-				Counter: numOfAttendees,
+				RoomID:          roomID,
+				AttendeeCounter: numOfAttendees,
 			},
 		},
 	}

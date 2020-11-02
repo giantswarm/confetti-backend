@@ -10,17 +10,29 @@ import (
 
 type MessagePayloadType string
 
+// MessagePayloadData contains all the keys
+// that can be used in the payload of an
+// event-specific websocket message.
 type MessagePayloadData struct {
+	// Message contains a user-friendly
+	// message explaining the outcome
+	// of the request.
 	Message string `json:"message,omitempty"`
 
 	onsite.OnsitePayload
 }
 
 type MessagePayload struct {
+	// MessageType represents the type of the message
+	// sent, such as `EVENT_UPDATE_CONFIGURATION`.
 	MessageType MessagePayloadType `json:"type"`
-	Data        MessagePayloadData `json:"data,omitempty"`
+	// Data represents data passed inside a
+	// message's payload.
+	Data MessagePayloadData `json:"data,omitempty"`
 }
 
+// Serialize marshals the payload into a JSON-encoded
+// byte buffer.
 func (mp *MessagePayload) Serialize() ([]byte, error) {
 	payloadBytes, err := json.Marshal(mp)
 	if err != nil {
@@ -30,6 +42,8 @@ func (mp *MessagePayload) Serialize() ([]byte, error) {
 	return payloadBytes, nil
 }
 
+// Deserialize unmarshals the JSON-encoded payload
+// into the struct.
 func (mp *MessagePayload) Deserialize(payloadBytes []byte) error {
 	err := json.Unmarshal(payloadBytes, mp)
 	if err != nil {

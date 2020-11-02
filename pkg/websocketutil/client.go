@@ -23,7 +23,9 @@ const (
 )
 
 type ClientConfig struct {
-	Hub        *Hub
+	// Hub is the web socket hub that this client belongs to.
+	Hub *Hub
+	// Connection is the websocket connection.
 	Connection *websocket.Conn
 }
 
@@ -32,14 +34,17 @@ type ClientConfig struct {
 // Taken from https://github.com/fasthttp/websocket/blob/master/_examples/chat/fasthttp/client.go
 // and modified to match our need.
 type Client struct {
-	hub *Hub
-
-	// The websocket connection.
+	hub  *Hub
 	conn *websocket.Conn
 
-	// Buffered channel of outbound messages.
+	// send is the buffered channel of outbound messages.
 	send chan []byte
 
+	// wg is a waiting group that synchronizes
+	// the writer and reader goroutines.
+	// It makes sure that the writer goroutine
+	// will be closed before the request goroutine
+	// is terminated.
 	wg sync.WaitGroup
 }
 
@@ -72,10 +77,12 @@ func (c *Client) Emit(payload []byte) bool {
 	return true
 }
 
+// GetUserValue retrieves a value from the connection context.
 func (c *Client) GetUserValue(key string) interface{} {
 	return c.conn.UserValue(key)
 }
 
+// SaveUserValue saves a value into the connection context.
 func (c *Client) SaveUserValue(key string, value interface{}) {
 	c.conn.SetUserValue(key, value)
 }

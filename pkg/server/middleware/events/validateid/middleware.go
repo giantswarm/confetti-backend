@@ -36,6 +36,8 @@ func New(c Config) (*Middleware, error) {
 	return m, nil
 }
 
+// Middleware validates if a event with the event ID
+// URL param exists.
 func (m *Middleware) Middleware() atreugo.Middleware {
 	return func(ctx *atreugo.RequestCtx) error {
 		id, ok := ctx.UserValue("id").(string)

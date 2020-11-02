@@ -57,6 +57,7 @@ func NewService(c ServiceConfig) (*Service, error) {
 	}
 
 	{
+		// Bind hub message handlers.
 		c.Hub.On(websocketutil.EventConnected, service.handleClientConnect)
 		c.Hub.On(websocketutil.EventDisconnected, service.handleClientDisconnect)
 		c.Hub.On(websocketutil.EventMessage, service.handleClientMessage)
@@ -81,36 +82,42 @@ func (s *Service) NewClient(ws *websocket.Conn) error {
 	return nil
 }
 
+// handleClientConnect is executed whenever a new websocket
+// connection is established.
 func (s *Service) handleClientConnect(message websocketutil.ClientMessage) {
 	handlerMessage := handlers.EventHandlerMessage{
-		EventID: s.getEventID(message),
-		User:    s.getUser(message),
-		Message: message,
-		Hub:     s.hub,
+		ClientMessage: message,
+		EventID:       s.getEventID(message),
+		User:          s.getUser(message),
+		Hub:           s.hub,
 	}
 	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
 		eventHandler.OnClientConnect(handlerMessage)
 	})
 }
 
+// handleClientDisconnect is executed whenever a websocket connection
+// is about to be closed.
 func (s *Service) handleClientDisconnect(message websocketutil.ClientMessage) {
 	handlerMessage := handlers.EventHandlerMessage{
-		EventID: s.getEventID(message),
-		User:    s.getUser(message),
-		Message: message,
-		Hub:     s.hub,
+		ClientMessage: message,
+		EventID:       s.getEventID(message),
+		User:          s.getUser(message),
+		Hub:           s.hub,
 	}
 	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
 		eventHandler.OnClientDisconnect(handlerMessage)
 	})
 }
 
+// handleClientMessage is executed whenever a websocket client
+// sends a message to the server.
 func (s *Service) handleClientMessage(message websocketutil.ClientMessage) {
 	handlerMessage := handlers.EventHandlerMessage{
-		EventID: s.getEventID(message),
-		User:    s.getUser(message),
-		Message: message,
-		Hub:     s.hub,
+		ClientMessage: message,
+		EventID:       s.getEventID(message),
+		User:          s.getUser(message),
+		Hub:           s.hub,
 	}
 	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
 		eventHandler.OnClientMessage(handlerMessage)

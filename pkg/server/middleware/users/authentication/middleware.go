@@ -43,6 +43,9 @@ func New(c Config) (*Middleware, error) {
 	return m, nil
 }
 
+// Middleware validates if the request has an authorization
+// `Bearer` type token, or if a token is present in the
+// `token` URL parameter.
 func (m *Middleware) Middleware() atreugo.Middleware {
 	return func(ctx *atreugo.RequestCtx) error {
 		token := m.getAuthorizationToken(ctx)

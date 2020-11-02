@@ -61,6 +61,7 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 }
 
 func (e *Endpoint) Endpoint() atreugo.View {
+	// Upgrade to a WebSocket connection.
 	return e.websocketUpgrader.Upgrade(func(ws *websocket.Conn) error {
 		err := e.service.NewClient(ws)
 		if err != nil {

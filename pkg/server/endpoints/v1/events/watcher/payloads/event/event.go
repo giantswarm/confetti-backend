@@ -10,6 +10,6 @@ const (
 	EventUpdateConfiguration = "EVENT_UPDATE_CONFIGURATION"
 )
 
-type EventPayload struct {
+type DefaultEventPayload struct {
 	Configuration *Configuration `json:"configuration,omitempty"`
 }

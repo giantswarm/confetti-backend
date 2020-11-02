@@ -7,7 +7,7 @@ import (
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/context/user"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers"
-	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers/onsite"
+	eventHandlers "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers/event"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
 	events "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
 	usersModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/users/types"
@@ -40,12 +40,18 @@ func NewService(c ServiceConfig) (*Service, error) {
 
 	var ehc *handlers.EventHandlerCollection
 	{
-		onsiteHandlerConfig := onsite.OnsiteEventConfig{
+		defaultEventHandlerConfig := eventHandlers.DefaultEventConfig{
 			Models: c.Models,
 		}
-		onsiteHandler := onsite.NewOnsiteEvent(onsiteHandlerConfig)
+		defaultEventHandler := eventHandlers.NewDefaultEventHandler(defaultEventHandlerConfig)
+
+		onsiteHandlerConfig := eventHandlers.OnsiteEventConfig{
+			Models: c.Models,
+		}
+		onsiteHandler := eventHandlers.NewOnsiteEventHandler(onsiteHandlerConfig)
 
 		ehc = handlers.NewEventHandlerCollection()
+		ehc.RegisterHandler((&events.BaseEvent{}).Type(), defaultEventHandler)
 		ehc.RegisterHandler(events.NewOnsiteEvent().Type(), onsiteHandler)
 	}
 

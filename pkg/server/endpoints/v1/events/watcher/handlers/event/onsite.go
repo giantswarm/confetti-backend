@@ -1,4 +1,4 @@
-package onsite
+package event
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ type OnsiteEventHandler struct {
 	models *models.Model
 }
 
-func NewOnsiteEvent(c OnsiteEventConfig) *OnsiteEventHandler {
+func NewOnsiteEventHandler(c OnsiteEventConfig) *OnsiteEventHandler {
 	oeh := &OnsiteEventHandler{
 		models: c.Models,
 	}

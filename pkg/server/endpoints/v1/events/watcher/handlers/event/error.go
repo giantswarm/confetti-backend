@@ -1,4 +1,4 @@
-package onsite
+package event
 
 import "github.com/giantswarm/microerror"
 

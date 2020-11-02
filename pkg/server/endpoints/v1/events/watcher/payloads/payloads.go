@@ -14,7 +14,7 @@ type MessagePayloadType string
 // that can be used in the payload of an
 // event-specific websocket message.
 type MessagePayloadData struct {
-	event.EventPayload
+	event.DefaultEventPayload
 	event.OnsitePayload
 
 	// Message contains a user-friendly

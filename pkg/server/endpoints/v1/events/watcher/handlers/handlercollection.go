@@ -4,6 +4,12 @@ import (
 	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
 )
 
+var (
+	// defaultEventType is the handler type that will be ran for
+	// all event types.
+	defaultEventType = (&eventsModelTypes.BaseEvent{}).Type()
+)
+
 type EventHandlerCollection struct {
 	handlers map[eventsModelTypes.EventType]EventHandler
 }
@@ -30,9 +36,13 @@ func (ehc *EventHandlerCollection) UnregisterHandler(eventType eventsModelTypes.
 }
 
 // Visit is using the visitor pattern to traverse all the
-// registered event handlers.
-func (ehc *EventHandlerCollection) Visit(visitor func(handler EventHandler)) {
-	for _, handler := range ehc.handlers {
+// event handlers registered for a given event type.
+func (ehc *EventHandlerCollection) Visit(eventType eventsModelTypes.EventType, visitor func(handler EventHandler)) {
+	for handlerEventType, handler := range ehc.handlers {
+		if handlerEventType != eventType && handlerEventType != defaultEventType {
+			continue
+		}
+
 		visitor(handler)
 	}
 }

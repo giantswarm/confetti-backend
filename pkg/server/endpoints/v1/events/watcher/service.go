@@ -98,7 +98,7 @@ func (s *Service) handleClientConnect(message websocketutil.ClientMessage) {
 		User:          s.getUser(message),
 		Hub:           s.hub,
 	}
-	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
+	s.eventHandlerCollection.Visit(handlerMessage.Event.Type(), func(eventHandler handlers.EventHandler) {
 		eventHandler.OnClientConnect(handlerMessage)
 	})
 }
@@ -112,7 +112,7 @@ func (s *Service) handleClientDisconnect(message websocketutil.ClientMessage) {
 		User:          s.getUser(message),
 		Hub:           s.hub,
 	}
-	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
+	s.eventHandlerCollection.Visit(handlerMessage.Event.Type(), func(eventHandler handlers.EventHandler) {
 		eventHandler.OnClientDisconnect(handlerMessage)
 	})
 }
@@ -126,7 +126,7 @@ func (s *Service) handleClientMessage(message websocketutil.ClientMessage) {
 		User:          s.getUser(message),
 		Hub:           s.hub,
 	}
-	s.eventHandlerCollection.Visit(func(eventHandler handlers.EventHandler) {
+	s.eventHandlerCollection.Visit(handlerMessage.Event.Type(), func(eventHandler handlers.EventHandler) {
 		eventHandler.OnClientMessage(handlerMessage)
 	})
 }

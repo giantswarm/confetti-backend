@@ -5,11 +5,12 @@ import (
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/context/event"
 	"github.com/giantswarm/confetti-backend/pkg/server/context/user"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers"
 	eventHandlers "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers/event"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
-	events "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
+	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
 	usersModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/users/types"
 	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )
@@ -51,8 +52,8 @@ func NewService(c ServiceConfig) (*Service, error) {
 		onsiteHandler := eventHandlers.NewOnsiteEventHandler(onsiteHandlerConfig)
 
 		ehc = handlers.NewEventHandlerCollection()
-		ehc.RegisterHandler((&events.BaseEvent{}).Type(), defaultEventHandler)
-		ehc.RegisterHandler(events.NewOnsiteEvent().Type(), onsiteHandler)
+		ehc.RegisterHandler((&eventsModelTypes.BaseEvent{}).Type(), defaultEventHandler)
+		ehc.RegisterHandler(eventsModelTypes.NewOnsiteEvent().Type(), onsiteHandler)
 	}
 
 	service := &Service{
@@ -93,7 +94,7 @@ func (s *Service) NewClient(ws *websocket.Conn) error {
 func (s *Service) handleClientConnect(message websocketutil.ClientMessage) {
 	handlerMessage := handlers.EventHandlerMessage{
 		ClientMessage: message,
-		EventID:       s.getEventID(message),
+		Event:         s.getEvent(message),
 		User:          s.getUser(message),
 		Hub:           s.hub,
 	}
@@ -107,7 +108,7 @@ func (s *Service) handleClientConnect(message websocketutil.ClientMessage) {
 func (s *Service) handleClientDisconnect(message websocketutil.ClientMessage) {
 	handlerMessage := handlers.EventHandlerMessage{
 		ClientMessage: message,
-		EventID:       s.getEventID(message),
+		Event:         s.getEvent(message),
 		User:          s.getUser(message),
 		Hub:           s.hub,
 	}
@@ -121,7 +122,7 @@ func (s *Service) handleClientDisconnect(message websocketutil.ClientMessage) {
 func (s *Service) handleClientMessage(message websocketutil.ClientMessage) {
 	handlerMessage := handlers.EventHandlerMessage{
 		ClientMessage: message,
-		EventID:       s.getEventID(message),
+		Event:         s.getEvent(message),
 		User:          s.getUser(message),
 		Hub:           s.hub,
 	}
@@ -130,14 +131,16 @@ func (s *Service) handleClientMessage(message websocketutil.ClientMessage) {
 	})
 }
 
-func (s *Service) getEventID(message websocketutil.ClientMessage) string {
-	// ID validation is already done in middleware.
-	return message.Client.GetUserValue("id").(string)
+func (s *Service) getEvent(message websocketutil.ClientMessage) eventsModelTypes.Event {
+	// Event validation is already done in middleware.
+	event, _ := event.FromValueGetter(message.Client.GetUserValue)
+
+	return event
 }
 
 func (s *Service) getUser(message websocketutil.ClientMessage) *usersModelTypes.User {
 	// User validation already done in middleware.
-	user, _ := user.FromUserValueGetter(message.Client.GetUserValue)
+	user, _ := user.FromValueGetter(message.Client.GetUserValue)
 
 	return user
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
 	usersModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/users/types"
 	"github.com/giantswarm/confetti-backend/pkg/websocketutil"
 )
@@ -8,9 +9,9 @@ import (
 type EventHandlerMessage struct {
 	websocketutil.ClientMessage
 
-	EventID string
-	User    *usersModelTypes.User
-	Hub     websocketutil.Hub
+	Event eventsModelTypes.Event
+	User  *usersModelTypes.User
+	Hub   websocketutil.Hub
 }
 
 // EventHandler is the place where event type specific

@@ -1,8 +1,6 @@
 package event
 
 import (
-	"github.com/giantswarm/microerror"
-
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads"
 	eventPayloads "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads/event"
@@ -27,15 +25,7 @@ func NewDefaultEventHandler(c DefaultEventConfig) *DefaultEventHandler {
 }
 
 func (oeh *DefaultEventHandler) OnClientConnect(message handlers.EventHandlerMessage) {
-	event, err := oeh.findEventByID(message.EventID)
-	if IsInvalidEventType(err) {
-		return
-	} else if err != nil {
-		// TODO(axbarsan): Dispatch error message.
-		return
-	}
-
-	payload := getEventConfigurationMessagePayload(event)
+	payload := getEventConfigurationMessagePayload(message.Event)
 	payloadBytes, _ := payload.Serialize()
 	message.ClientMessage.Client.Emit(payloadBytes)
 }
@@ -44,15 +34,6 @@ func (oeh *DefaultEventHandler) OnClientDisconnect(message handlers.EventHandler
 }
 
 func (oeh *DefaultEventHandler) OnClientMessage(message handlers.EventHandlerMessage) {
-}
-
-func (oeh *DefaultEventHandler) findEventByID(id string) (eventsModelTypes.Event, error) {
-	event, err := oeh.models.Events.FindOneByID(id)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	return event, nil
 }
 
 func getEventConfigurationMessagePayload(event eventsModelTypes.Event) payloads.MessagePayload {

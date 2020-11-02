@@ -7,7 +7,10 @@ import (
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
+	"github.com/giantswarm/confetti-backend/pkg/server/context/event"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
+	eventsModel "github.com/giantswarm/confetti-backend/pkg/server/models/events"
+	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
 )
 
 type Config struct {
@@ -47,18 +50,27 @@ func (m *Middleware) Middleware() atreugo.Middleware {
 			return microerror.Mask(invalidParamsError)
 		}
 
-		if !m.eventExists(id) {
+		e, err := m.findEventByID(id)
+		if eventsModel.IsNotFoundError(err) {
 			ctx.SetStatusCode(http.StatusNotFound)
 
 			return microerror.Mask(notFoundError)
+		} else if err != nil {
+			ctx.SetStatusCode(http.StatusInternalServerError)
+
+			return microerror.Mask(internalServerError)
 		}
+		event.SaveContext(ctx, e)
 
 		return ctx.Next()
 	}
 }
 
-func (m *Middleware) eventExists(id string) bool {
-	_, err := m.models.Events.FindOneByID(id)
+func (m *Middleware) findEventByID(id string) (eventsModelTypes.Event, error) {
+	e, err := m.models.Events.FindOneByID(id)
+	if err != nil {
+		return nil, microerror.Mask(err)
+	}
 
-	return err == nil
+	return e, nil
 }

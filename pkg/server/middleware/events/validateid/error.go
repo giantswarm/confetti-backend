@@ -24,7 +24,16 @@ var notFoundError = &microerror.Error{
 	Kind: "notFoundError",
 }
 
-// IsInvalidParamsError asserts notFoundError.
+// IsNotFoundError asserts notFoundError.
 func IsNotFoundError(err error) bool {
 	return microerror.Cause(err) == notFoundError
+}
+
+var internalServerError = &microerror.Error{
+	Kind: "internalServerError",
+}
+
+// IsInternalServerError asserts internalServerError.
+func IsInternalServerError(err error) bool {
+	return microerror.Cause(err) == internalServerError
 }

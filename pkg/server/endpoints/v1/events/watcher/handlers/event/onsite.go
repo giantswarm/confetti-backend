@@ -3,8 +3,6 @@ package event
 import (
 	"fmt"
 
-	"github.com/giantswarm/microerror"
-
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads"
 	eventPayloads "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads/event"
@@ -30,11 +28,8 @@ func NewOnsiteEventHandler(c OnsiteEventConfig) *OnsiteEventHandler {
 }
 
 func (oeh *OnsiteEventHandler) OnClientConnect(message handlers.EventHandlerMessage) {
-	event, err := oeh.findEventByID(message.EventID)
-	if IsInvalidEventType(err) {
-		return
-	} else if err != nil {
-		// TODO(axbarsan): Dispatch error message.
+	event, ok := message.Event.(*eventsModelTypes.OnsiteEvent)
+	if !ok {
 		return
 	}
 
@@ -42,11 +37,8 @@ func (oeh *OnsiteEventHandler) OnClientConnect(message handlers.EventHandlerMess
 }
 
 func (oeh *OnsiteEventHandler) OnClientDisconnect(message handlers.EventHandlerMessage) {
-	event, err := oeh.findEventByID(message.EventID)
-	if IsInvalidEventType(err) {
-		return
-	} else if err != nil {
-		// TODO(axbarsan): Dispatch error message.
+	event, ok := message.Event.(*eventsModelTypes.OnsiteEvent)
+	if !ok {
 		return
 	}
 
@@ -54,19 +46,16 @@ func (oeh *OnsiteEventHandler) OnClientDisconnect(message handlers.EventHandlerM
 }
 
 func (oeh *OnsiteEventHandler) OnClientMessage(message handlers.EventHandlerMessage) {
-	event, err := oeh.findEventByID(message.EventID)
-	if IsInvalidEventType(err) {
-		return
-	} else if err != nil {
-		// TODO(axbarsan): Dispatch error message.
+	event, ok := message.Event.(*eventsModelTypes.OnsiteEvent)
+	if !ok {
 		return
 	}
 
 	payload := payloads.MessagePayload{}
-	err = payload.Deserialize(message.ClientMessage.Payload)
+	err := payload.Deserialize(message.ClientMessage.Payload)
 	if err != nil {
-		fmt.Println(err)
 		// TODO(axbarsan): Dispatch error message.
+		return
 	}
 
 	switch payload.MessageType {
@@ -75,20 +64,6 @@ func (oeh *OnsiteEventHandler) OnClientMessage(message handlers.EventHandlerMess
 	case eventPayloads.OnsiteRoomLeaveRequest:
 		oeh.handleRoomLeave(event, message, payload)
 	}
-}
-
-func (oeh *OnsiteEventHandler) findEventByID(id string) (*eventsModelTypes.OnsiteEvent, error) {
-	event, err := oeh.models.Events.FindOneByID(id)
-	if err != nil {
-		return nil, microerror.Mask(err)
-	}
-
-	onsiteEvent, ok := event.(*eventsModelTypes.OnsiteEvent)
-	if !ok {
-		return nil, microerror.Mask(invalidEventTypeError)
-	}
-
-	return onsiteEvent, nil
 }
 
 func (oek *OnsiteEventHandler) handleInitialStateMessages(event *eventsModelTypes.OnsiteEvent, message handlers.EventHandlerMessage) {

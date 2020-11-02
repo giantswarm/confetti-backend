@@ -1,6 +1,7 @@
 package response
 
 type ResponseDetails struct {
+	// Onsite specific.
 	Rooms []ResponseOnsiteRoom `json:"rooms,omitempty"`
 }
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/giantswarm/microerror"
 
-	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads/onsite"
+	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads/event"
 )
 
 type MessagePayloadType string
@@ -14,12 +14,13 @@ type MessagePayloadType string
 // that can be used in the payload of an
 // event-specific websocket message.
 type MessagePayloadData struct {
+	event.EventPayload
+	event.OnsitePayload
+
 	// Message contains a user-friendly
 	// message explaining the outcome
 	// of the request.
 	Message string `json:"message,omitempty"`
-
-	onsite.OnsitePayload
 }
 
 type MessagePayload struct {

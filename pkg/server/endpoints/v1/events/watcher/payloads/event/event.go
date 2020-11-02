@@ -1,4 +1,4 @@
-package payloads
+package event
 
 const (
 	// EventUpdateConfiguration is broadcasted by
@@ -9,3 +9,7 @@ const (
 	// when a new connection is established.
 	EventUpdateConfiguration = "EVENT_UPDATE_CONFIGURATION"
 )
+
+type EventPayload struct {
+	Configuration *Configuration `json:"configuration,omitempty"`
+}

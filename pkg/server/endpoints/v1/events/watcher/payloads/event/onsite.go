@@ -1,4 +1,4 @@
-package onsite
+package event
 
 const (
 	// OnsiteRoomJoinRequest is sent by the client
@@ -42,4 +42,11 @@ type OnsitePayload struct {
 	// AttendeeCounter represents the number
 	// of attendees in a onsite's room.
 	AttendeeCounter *int `json:"attendee_counter,omitempty"`
+}
+
+type ConfigurationOnsiteRoom struct {
+	ID            string `json:"id"`
+	Name          string `json:"name"`
+	Description   string `json:"description"`
+	ConferenceURL string `json:"conference_url"`
 }

@@ -1,4 +1,4 @@
-package events
+package lister
 
 import (
 	"github.com/giantswarm/microerror"

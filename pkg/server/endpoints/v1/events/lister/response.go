@@ -1,4 +1,4 @@
-package events
+package lister
 
 type ResponseEvent struct {
 	Active    bool   `json:"active"`

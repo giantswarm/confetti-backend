@@ -109,10 +109,10 @@ func New(c Config) (*Server, error) {
 		).Middlewares(v1Endpoint.Users.Login.Middlewares())
 
 		group.Path(
-			v1Endpoint.Events.Method(),
-			v1Endpoint.Events.Path(),
-			v1Endpoint.Events.Endpoint(),
-		).Middlewares(v1Endpoint.Events.Middlewares())
+			v1Endpoint.Events.Lister.Method(),
+			v1Endpoint.Events.Lister.Path(),
+			v1Endpoint.Events.Lister.Endpoint(),
+		).Middlewares(v1Endpoint.Events.Lister.Middlewares())
 		group.Path(
 			v1Endpoint.Events.Searcher.Method(),
 			v1Endpoint.Events.Searcher.Path(),

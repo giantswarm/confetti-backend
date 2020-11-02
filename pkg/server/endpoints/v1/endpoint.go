@@ -119,23 +119,10 @@ func createUsersEndpoint(flags *flags.Flags, middleware *middleware.Middleware, 
 func createEventsEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model, websocketUpgrader *websocket.Upgrader) (*events.Endpoint, error) {
 	var err error
 
-	var service *events.Service
-	{
-		c := events.ServiceConfig{
-			Flags:  flags,
-			Models: models,
-		}
-		service, err = events.NewService(c)
-		if err != nil {
-			return nil, microerror.Mask(err)
-		}
-	}
-
 	var endpoint *events.Endpoint
 	{
 		c := events.EndpointConfig{
 			Flags:             flags,
-			Service:           service,
 			Middleware:        middleware,
 			Models:            models,
 			WebsocketUpgrader: websocketUpgrader,

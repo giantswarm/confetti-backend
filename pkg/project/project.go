@@ -1,7 +1,7 @@
 package project
 
 var (
-	description = "Confetti is an application for scheduling remote events."
+	description = "An application for scheduling remote events."
 	gitSHA      = "n/a"
 	name        = "confetti-backend"
 	source      = "https://github.com/giantswarm/confetti-backend"

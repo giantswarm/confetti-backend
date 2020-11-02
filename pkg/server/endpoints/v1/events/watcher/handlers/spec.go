@@ -10,7 +10,7 @@ type EventHandlerMessage struct {
 
 	EventID string
 	User    *usersModelTypes.User
-	Hub     *websocketutil.Hub
+	Hub     websocketutil.Hub
 }
 
 // EventHandler is the place where event type specific

@@ -16,13 +16,13 @@ import (
 
 type ServiceConfig struct {
 	Flags  *flags.Flags
-	Hub    *websocketutil.Hub
+	Hub    websocketutil.Hub
 	Models *models.Model
 }
 
 type Service struct {
 	flags                  *flags.Flags
-	hub                    *websocketutil.Hub
+	hub                    websocketutil.Hub
 	models                 *models.Model
 	eventHandlerCollection *handlers.EventHandlerCollection
 }

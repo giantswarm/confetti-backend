@@ -110,9 +110,9 @@ func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middlewar
 func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model, websocketUpgrader *websocket.Upgrader) (*watcher.Endpoint, error) {
 	var err error
 
-	var hub *websocketutil.Hub
+	var hub websocketutil.Hub
 	{
-		hub, err = websocketutil.NewHub()
+		hub, err = websocketutil.NewSocketHub()
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}

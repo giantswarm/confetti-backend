@@ -24,7 +24,7 @@ const (
 
 type ClientConfig struct {
 	// Hub is the web socket hub that this client belongs to.
-	Hub *Hub
+	Hub Hub
 	// Connection is the websocket connection.
 	Connection *websocket.Conn
 }
@@ -34,7 +34,7 @@ type ClientConfig struct {
 // Taken from https://github.com/fasthttp/websocket/blob/master/_examples/chat/fasthttp/client.go
 // and modified to match our need.
 type Client struct {
-	hub  *Hub
+	hub  Hub
 	conn *websocket.Conn
 
 	// send is the buffered channel of outbound messages.
@@ -90,10 +90,7 @@ func (c *Client) SaveUserValue(key string, value interface{}) {
 func (c *Client) registerToHub() {
 	c.wg.Add(1)
 
-	clientMessage := ClientMessage{
-		Client: c,
-	}
-	c.hub.register <- clientMessage
+	c.hub.RegisterClient(c)
 
 	go c.writePump()
 	c.readPump()
@@ -108,10 +105,7 @@ func (c *Client) registerToHub() {
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
-		clientMessage := ClientMessage{
-			Client: c,
-		}
-		c.hub.unregister <- clientMessage
+		c.hub.UnregisterClient(c)
 		c.conn.Close()
 	}()
 
@@ -133,7 +127,7 @@ func (c *Client) readPump() {
 			Client:  c,
 			Payload: message,
 		}
-		c.hub.broadcast <- clientMessage
+		c.hub.SendMessage(clientMessage)
 	}
 }
 

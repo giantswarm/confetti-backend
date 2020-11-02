@@ -1,21 +1,12 @@
 package users
 
 import (
-	"net/http"
-
-	"github.com/savsgio/atreugo/v11"
-
 	"github.com/giantswarm/microerror"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/users/login"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
-)
-
-const (
-	method = "GET"
-	path   = "/users/"
 )
 
 type EndpointConfig struct {
@@ -57,29 +48,6 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	}
 
 	return endpoint, nil
-}
-
-func (e *Endpoint) Endpoint() atreugo.View {
-	return func(ctx *atreugo.RequestCtx) error {
-		err := ctx.HTTPResponse("", http.StatusNotFound)
-		if err != nil {
-			return microerror.Mask(err)
-		}
-
-		return nil
-	}
-}
-
-func (e *Endpoint) Middlewares() atreugo.Middlewares {
-	return atreugo.Middlewares{}
-}
-
-func (e *Endpoint) Path() string {
-	return path
-}
-
-func (e *Endpoint) Method() string {
-	return method
 }
 
 func createLoginEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model) (*login.Endpoint, error) {

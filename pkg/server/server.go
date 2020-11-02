@@ -98,11 +98,6 @@ func New(c Config) (*Server, error) {
 		).Middlewares(v1Endpoint.Middlewares())
 
 		group.Path(
-			v1Endpoint.Users.Method(),
-			v1Endpoint.Users.Path(),
-			v1Endpoint.Users.Endpoint(),
-		).Middlewares(v1Endpoint.Users.Middlewares())
-		group.Path(
 			v1Endpoint.Users.Login.Method(),
 			v1Endpoint.Users.Login.Path(),
 			v1Endpoint.Users.Login.Endpoint(),

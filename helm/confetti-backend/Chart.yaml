@@ -3,5 +3,5 @@ name: confetti-backend
 namespace: confetti
 description: An application for scheduling remote events.
 home: https://github.com/giantswarm/confetti-backend
-version: 0.0.0-441017f289c826ab3711579937d4187e4563f9bb
-appVersion: 0.1.0-dev
+version: [[ .Version ]]
+appVersion: [[ .AppVersion ]]

@@ -1,8 +1,9 @@
 name: confetti-backend
-namespace: giantswarm
+namespace: confetti
 userID: 1000
 groupID: 1000
 image:
+  name: confetti-backend
   repository: giantswarm/confetti-backend
   tag: 0.0.0-441017f289c826ab3711579937d4187e4563f9bb
 ports:

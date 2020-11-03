@@ -19,7 +19,7 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: {{ $serviceName }}
+              serviceName: {{ .Values.name }}
               servicePort: 7777
     {{- end }}
   tls:

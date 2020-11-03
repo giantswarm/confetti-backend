@@ -11,3 +11,4 @@ ports:
   confetti-backend-service:
     port: 7777
     protocol: TCP
+hostnames: []

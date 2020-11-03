@@ -21,7 +21,6 @@ spec:
         runAsUser: 1000
       containers:
         - name: {{ .Values.image.name }}
-          # Public image required
           image: "quay.io/giantswarm/{{ .Values.image.name }}:{{ .Values.image.sha }}"
           imagePullPolicy: Always
           args:
@@ -29,13 +28,16 @@ spec:
           ports:
             - containerPort: 7777
               name: http
+          volumeMounts:
+            - mountPath: /var/cache/nginx
+              name: cache-volume
           resources:
             requests:
               cpu: 200m
-              memory: 10M
+              memory: 30M
             limits:
               cpu: 500m
-              memory: 20M
+              memory: 30M
           livenessProbe:
             httpGet:
               path: /
@@ -44,5 +46,13 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 30
             timeoutSeconds: 2
+
+      imagePullSecrets:
+        - name: confetti-backend-pull-secret
+
+      volumes:
+        - name: cache-volume
+          emptyDir: {}
+
       serviceAccount: {{ .Values.name }}
       serviceAccountName: {{ .Values.name }}

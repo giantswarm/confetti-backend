@@ -143,6 +143,21 @@ func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEven
 	var payloadBytes []byte
 	var payload payloads.MessagePayload
 
+	// Validate the RoomID parameter.
+	if len(messagePayload.Data.RoomID) == 0 {
+		payload = payloads.MessagePayload{
+			MessageType: eventPayloads.OnsiteRoomJoinError,
+			Data: payloads.MessagePayloadData{
+				Message: "The room ID parameter must not be empty.",
+			},
+		}
+
+		payloadBytes, _ = payload.Serialize()
+		message.ClientMessage.Client.Emit(payloadBytes)
+
+		return
+	}
+
 	var roomIndex int
 	var room eventsModelTypes.OnsiteEventRoom
 	for roomIndex, room = range event.Rooms {
@@ -225,6 +240,21 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 
 	var payloadBytes []byte
 	var payload payloads.MessagePayload
+
+	// Validate the RoomID parameter.
+	if len(messagePayload.Data.RoomID) == 0 {
+		payload = payloads.MessagePayload{
+			MessageType: eventPayloads.OnsiteRoomLeaveError,
+			Data: payloads.MessagePayloadData{
+				Message: "The room ID parameter must not be empty.",
+			},
+		}
+
+		payloadBytes, _ = payload.Serialize()
+		message.ClientMessage.Client.Emit(payloadBytes)
+
+		return
+	}
 
 	var roomIndex int
 	var room eventsModelTypes.OnsiteEventRoom

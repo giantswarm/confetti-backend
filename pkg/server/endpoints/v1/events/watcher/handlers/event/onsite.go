@@ -54,7 +54,15 @@ func (oeh *OnsiteEventHandler) OnClientMessage(message handlers.EventHandlerMess
 	payload := payloads.MessagePayload{}
 	err := payload.Deserialize(message.ClientMessage.Payload)
 	if err != nil {
-		// TODO(axbarsan): Dispatch error message.
+		payload = payloads.MessagePayload{
+			MessageType: eventPayloads.EventInvalidPayloadError,
+			Data: payloads.MessagePayloadData{
+				Message: "Message payload doesn't have a valid JSON syntax.",
+			},
+		}
+		payloadBytes, _ := payload.Serialize()
+		message.ClientMessage.Client.Emit(payloadBytes)
+
 		return
 	}
 

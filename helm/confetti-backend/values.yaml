@@ -1,0 +1,8 @@
+name: confetti-backend
+namespace: confetti-backend
+image:
+  name: confetti-backend
+  repository: giantswarm/confetti-backend
+  tag: "[[.Version]]"
+  sha: "[[.SHA]]"
+hostnames: []

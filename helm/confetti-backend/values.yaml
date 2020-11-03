@@ -5,7 +5,8 @@ groupID: 1000
 image:
   name: confetti-backend
   repository: giantswarm/confetti-backend
-  tag: 0.0.0-441017f289c826ab3711579937d4187e4563f9bb
+  tag: "[[.Version]]"
+  sha: "[[.SHA]]"
 ports:
   confetti-backend-service:
     port: 7777

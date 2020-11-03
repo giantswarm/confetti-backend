@@ -1,14 +1,8 @@
 name: confetti-backend
 namespace: confetti
-userID: 1000
-groupID: 1000
 image:
   name: confetti-backend
   repository: giantswarm/confetti-backend
   tag: "[[.Version]]"
   sha: "[[.SHA]]"
-ports:
-  confetti-backend-service:
-    port: 7777
-    protocol: TCP
 hostnames: []

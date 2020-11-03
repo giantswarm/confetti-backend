@@ -22,6 +22,7 @@ spec:
   volumes:
   - secret
   - configMap
+  - emptyDir
 ---
 apiVersion: v1
 kind: ServiceAccount

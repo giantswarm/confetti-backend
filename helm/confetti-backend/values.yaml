@@ -1,5 +1,5 @@
 name: confetti-backend
-namespace: confetti
+namespace: confetti-backend
 image:
   name: confetti-backend
   repository: giantswarm/confetti-backend

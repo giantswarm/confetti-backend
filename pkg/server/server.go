@@ -66,7 +66,7 @@ func New(c Config) (*Server, error) {
 		}
 	}
 
-	s.atreugo.UseBefore(allMiddlewares.Cors.Middleware())
+	s.atreugo.UseAfter(allMiddlewares.Cors.Middleware())
 
 	var rootEndpoint *root.Endpoint
 	{

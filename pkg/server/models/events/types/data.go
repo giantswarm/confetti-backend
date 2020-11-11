@@ -7,7 +7,7 @@ func MakeInitialData() []Event {
 		christmasOnsite2020.BaseEvent.active = true
 		christmasOnsite2020.BaseEvent.id = "christmas-onsite-2020"
 		christmasOnsite2020.BaseEvent.name = "Christmas Onsite 2020"
-		christmasOnsite2020.Rooms = append(christmasOnsite2020.Rooms, []OnsiteEventRoom{
+		christmasOnsite2020.Rooms = []OnsiteEventRoom{
 			{
 				ID:            "main-stage",
 				Name:          "Main Stage",
@@ -93,7 +93,7 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 				ConferenceURL: "https://www.giantswarm.io",
 				Description:   "Just in case you get cold and you want to catch your breath.",
 			},
-		}...)
+		}
 	}
 
 	events := []Event{

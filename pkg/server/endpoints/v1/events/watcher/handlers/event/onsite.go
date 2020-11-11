@@ -102,38 +102,33 @@ func (oek *OnsiteEventHandler) handleFiniteStateMessages(event *eventsModelTypes
 	var payloadBytes []byte
 	var payload payloads.MessagePayload
 
-	var roomIndex int
-	var room eventsModelTypes.OnsiteEventRoom
-	for _, room = range event.Rooms {
+	for roomIndex, room := range event.Rooms {
 		if _, ok := room.Attendees[message.User]; !ok {
 			// User is not in the room.
 			continue
 		}
 
 		delete(room.Attendees, message.User)
+		event.Rooms[roomIndex] = room
+
+		// Broadcast room attendee counter update message.
+		payload = roomMessagePayload(
+			eventPayloads.OnsiteRoomUpdateAttendeeCounter,
+			"",
+			room.ID,
+			toIntPtr(len(room.Attendees)),
+		)
+		payloadBytes, _ = payload.Serialize()
+		message.Hub.BroadcastAll(payloadBytes)
 	}
 
 	{
-		event.Rooms[roomIndex] = room
 		_, err = oek.models.Events.Update(event)
 		if err != nil {
 			// Ignore error, we don't want to send it to the client.
 			return
 		}
 	}
-
-	payloadBytes, _ = payload.Serialize()
-	message.ClientMessage.Client.Emit(payloadBytes)
-
-	// Broadcast room attendee counter update message.
-	payload = roomMessagePayload(
-		eventPayloads.OnsiteRoomUpdateAttendeeCounter,
-		"",
-		room.ID,
-		toIntPtr(len(room.Attendees)),
-	)
-	payloadBytes, _ = payload.Serialize()
-	message.Hub.BroadcastAll(payloadBytes)
 }
 
 func (oek *OnsiteEventHandler) handleRoomJoin(event *eventsModelTypes.OnsiteEvent, message handlers.EventHandlerMessage, messagePayload payloads.MessagePayload) {

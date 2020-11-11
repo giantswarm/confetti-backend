@@ -254,18 +254,17 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 	var roomIndex int
 	var room eventsModelTypes.OnsiteEventRoom
 	for roomIndex, room = range event.Rooms {
-		if room.ID != messagePayload.Data.RoomID {
+		if room.ID != messagePayload.Data.RoomID || room.Attendees == nil {
 			continue
 		}
 
 		{
-			if _, ok := room.Attendees[message.User]; ok && room.Attendees != nil {
+			if _, ok := room.Attendees[message.User]; ok {
 				delete(room.Attendees, message.User)
 			} else {
 				// User not in room.
 				return
 			}
-			event.Lobby[message.User] = true
 		}
 
 		payload = roomMessagePayload(
@@ -295,6 +294,7 @@ func (oek *OnsiteEventHandler) handleRoomLeave(event *eventsModelTypes.OnsiteEve
 	}
 
 	{
+		event.Lobby[message.User] = true
 		event.Rooms[roomIndex] = room
 		_, err = oek.models.Events.Update(event)
 		if err != nil {

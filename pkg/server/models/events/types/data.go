@@ -37,7 +37,7 @@ We are not limited to remote only discussions. Other "new work buzzwords" like t
 			},
 			{
 				ID:            "security",
-				Name:          "security/auditing",
+				Name:          "Security / Auditing",
 				ConferenceURL: "https://www.giantswarm.io",
 				Description: `--- CLASSIFIED ---
 

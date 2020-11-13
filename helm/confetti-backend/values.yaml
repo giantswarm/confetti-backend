@@ -6,3 +6,4 @@ image:
   tag: "[[.Version]]"
   sha: "[[.SHA]]"
 hostnames: []
+allowedOrigins: []

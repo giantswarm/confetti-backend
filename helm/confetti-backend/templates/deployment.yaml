@@ -24,7 +24,10 @@ spec:
           image: "quay.io/giantswarm/{{ .Values.image.name }}:{{ .Values.image.tag }}"
           imagePullPolicy: Always
           args:
-          - "daemon"
+          - daemon
+          {{- range .Values.allowedOrigins }}
+          - --allowed-origin={{ . }}
+          {{- end }}
           ports:
             - containerPort: 7777
               name: http

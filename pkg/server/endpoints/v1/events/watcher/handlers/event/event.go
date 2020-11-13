@@ -1,12 +1,13 @@
 package event
 
 import (
+	"github.com/giantswarm/micrologger"
+
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/handlers"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads"
 	eventPayloads "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads/event"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
 	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
-	"github.com/giantswarm/micrologger"
 )
 
 type DefaultEventConfig struct {

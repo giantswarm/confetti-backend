@@ -2,6 +2,7 @@ package cors
 
 import (
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
@@ -11,11 +12,13 @@ import (
 type Config struct {
 	Flags  *flags.Flags
 	Models *models.Model
+	Logger micrologger.Logger
 }
 
 type Middleware struct {
 	flags  *flags.Flags
 	models *models.Model
+	logger micrologger.Logger
 }
 
 func New(c Config) (*Middleware, error) {
@@ -25,10 +28,14 @@ func New(c Config) (*Middleware, error) {
 	if c.Models == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
 	}
+	if c.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", c)
+	}
 
 	m := &Middleware{
 		flags:  c.Flags,
 		models: c.Models,
+		logger: c.Logger,
 	}
 
 	return m, nil

@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/atreugo/websocket"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
@@ -16,12 +17,14 @@ type Config struct {
 	Atreugo           *atreugo.Atreugo
 	Flags             *flags.Flags
 	WebsocketUpgrader *websocket.Upgrader
+	Logger            micrologger.Logger
 }
 
 type Server struct {
 	atreugo           *atreugo.Atreugo
 	flags             *flags.Flags
 	websocketUpgrader *websocket.Upgrader
+	logger            micrologger.Logger
 }
 
 func New(c Config) (*Server, error) {
@@ -34,6 +37,9 @@ func New(c Config) (*Server, error) {
 	if c.WebsocketUpgrader == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.WebsocketUpgrader must not be empty", c)
 	}
+	if c.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", c)
+	}
 
 	var err error
 
@@ -41,12 +47,14 @@ func New(c Config) (*Server, error) {
 		atreugo:           c.Atreugo,
 		flags:             c.Flags,
 		websocketUpgrader: c.WebsocketUpgrader,
+		logger:            c.Logger,
 	}
 
 	var allModels *models.Model
 	{
 		c := models.Config{
-			Flags: s.flags,
+			Flags:  s.flags,
+			Logger: c.Logger,
 		}
 		allModels, err = models.New(c)
 		if err != nil {
@@ -59,6 +67,7 @@ func New(c Config) (*Server, error) {
 		c := middleware.Config{
 			Flags:  s.flags,
 			Models: allModels,
+			Logger: c.Logger,
 		}
 		allMiddlewares, err = middleware.New(c)
 		if err != nil {
@@ -70,7 +79,7 @@ func New(c Config) (*Server, error) {
 
 	var rootEndpoint *root.Endpoint
 	{
-		rootEndpoint, err = newRootEndpoint(s.flags, allMiddlewares, allModels)
+		rootEndpoint, err = newRootEndpoint(s.flags, s.logger, allMiddlewares, allModels)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -86,7 +95,7 @@ func New(c Config) (*Server, error) {
 	{
 		group := s.atreugo.NewGroupPath("/v1")
 
-		v1Endpoint, err = newV1Endpoint(s.flags, allMiddlewares, s.websocketUpgrader, allModels)
+		v1Endpoint, err = newV1Endpoint(s.flags, s.logger, allMiddlewares, s.websocketUpgrader, allModels)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
@@ -131,7 +140,7 @@ func (s *Server) Boot() error {
 	return nil
 }
 
-func newRootEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model) (*root.Endpoint, error) {
+func newRootEndpoint(flags *flags.Flags, logger micrologger.Logger, middleware *middleware.Middleware, models *models.Model) (*root.Endpoint, error) {
 	var err error
 
 	var endpoint *root.Endpoint
@@ -140,6 +149,7 @@ func newRootEndpoint(flags *flags.Flags, middleware *middleware.Middleware, mode
 			Flags:      flags,
 			Middleware: middleware,
 			Models:     models,
+			Logger:     logger,
 		}
 		endpoint, err = root.NewEndpoint(c)
 		if err != nil {
@@ -150,7 +160,7 @@ func newRootEndpoint(flags *flags.Flags, middleware *middleware.Middleware, mode
 	return endpoint, nil
 }
 
-func newV1Endpoint(flags *flags.Flags, middleware *middleware.Middleware, websocketUpgrader *websocket.Upgrader, models *models.Model) (*v1.Endpoint, error) {
+func newV1Endpoint(flags *flags.Flags, logger micrologger.Logger, middleware *middleware.Middleware, websocketUpgrader *websocket.Upgrader, models *models.Model) (*v1.Endpoint, error) {
 	var err error
 
 	var endpoint *v1.Endpoint
@@ -160,6 +170,7 @@ func newV1Endpoint(flags *flags.Flags, middleware *middleware.Middleware, websoc
 			Middleware:        middleware,
 			Models:            models,
 			WebsocketUpgrader: websocketUpgrader,
+			Logger:            logger,
 		}
 		endpoint, err = v1.NewEndpoint(c)
 		if err != nil {

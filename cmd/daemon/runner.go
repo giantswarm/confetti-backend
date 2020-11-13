@@ -6,6 +6,7 @@ import (
 
 	"github.com/atreugo/websocket"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 	"github.com/savsgio/atreugo/v11"
 	"github.com/spf13/cobra"
 
@@ -68,12 +69,23 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 		websocketUpgrader = websocket.New(c)
 	}
 
+	var logger micrologger.Logger
+	{
+		c := micrologger.Config{}
+
+		logger, err = micrologger.New(c)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	}
+
 	var s *server.Server
 	{
 		c := server.Config{
 			Atreugo:           atreugoServer,
 			Flags:             f,
 			WebsocketUpgrader: websocketUpgrader,
+			Logger:            logger,
 		}
 		s, err = server.New(c)
 		if err != nil {

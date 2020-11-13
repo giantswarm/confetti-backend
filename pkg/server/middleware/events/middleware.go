@@ -2,6 +2,7 @@ package events
 
 import (
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware/events/validateid"
@@ -11,6 +12,7 @@ import (
 type Config struct {
 	Flags  *flags.Flags
 	Models *models.Model
+	Logger micrologger.Logger
 }
 
 type Middleware struct {
@@ -18,6 +20,7 @@ type Middleware struct {
 
 	flags  *flags.Flags
 	models *models.Model
+	logger micrologger.Logger
 }
 
 func New(c Config) (*Middleware, error) {
@@ -27,6 +30,9 @@ func New(c Config) (*Middleware, error) {
 	if c.Models == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
 	}
+	if c.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", c)
+	}
 
 	var err error
 
@@ -35,6 +41,7 @@ func New(c Config) (*Middleware, error) {
 		c := validateid.Config{
 			Flags:  c.Flags,
 			Models: c.Models,
+			Logger: c.Logger,
 		}
 
 		validateidMiddleware, err = validateid.New(c)
@@ -48,6 +55,7 @@ func New(c Config) (*Middleware, error) {
 
 		flags:  c.Flags,
 		models: c.Models,
+		logger: c.Logger,
 	}
 
 	return m, nil

@@ -5,6 +5,7 @@ import (
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/middleware"
@@ -22,6 +23,7 @@ type EndpointConfig struct {
 	Middleware        *middleware.Middleware
 	WebsocketUpgrader *websocket.Upgrader
 	Models            *models.Model
+	Logger            micrologger.Logger
 }
 
 type Endpoint struct {
@@ -30,6 +32,7 @@ type Endpoint struct {
 	middleware        *middleware.Middleware
 	websocketUpgrader *websocket.Upgrader
 	models            *models.Model
+	logger            micrologger.Logger
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
@@ -48,6 +51,9 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	if c.Models == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
 	}
+	if c.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", c)
+	}
 
 	endpoint := &Endpoint{
 		flags:             c.Flags,
@@ -55,6 +61,7 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 		middleware:        c.Middleware,
 		models:            c.Models,
 		websocketUpgrader: c.WebsocketUpgrader,
+		logger:            c.Logger,
 	}
 
 	return endpoint, nil

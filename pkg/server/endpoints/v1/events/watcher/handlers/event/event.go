@@ -6,19 +6,23 @@ import (
 	eventPayloads "github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/watcher/payloads/event"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
 	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
+	"github.com/giantswarm/micrologger"
 )
 
 type DefaultEventConfig struct {
 	Models *models.Model
+	Logger micrologger.Logger
 }
 
 type DefaultEventHandler struct {
 	models *models.Model
+	logger micrologger.Logger
 }
 
 func NewDefaultEventHandler(c DefaultEventConfig) *DefaultEventHandler {
 	oeh := &DefaultEventHandler{
 		models: c.Models,
+		logger: c.Logger,
 	}
 
 	return oeh

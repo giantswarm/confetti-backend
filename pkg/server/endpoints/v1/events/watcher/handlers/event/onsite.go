@@ -9,19 +9,23 @@ import (
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
 	eventsModelTypes "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
 	"github.com/giantswarm/confetti-backend/pkg/server/models/users/types"
+	"github.com/giantswarm/micrologger"
 )
 
 type OnsiteEventConfig struct {
 	Models *models.Model
+	Logger micrologger.Logger
 }
 
 type OnsiteEventHandler struct {
 	models *models.Model
+	logger micrologger.Logger
 }
 
 func NewOnsiteEventHandler(c OnsiteEventConfig) *OnsiteEventHandler {
 	oeh := &OnsiteEventHandler{
 		models: c.Models,
+		logger: c.Logger,
 	}
 
 	return oeh

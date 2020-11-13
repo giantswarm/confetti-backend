@@ -6,6 +6,7 @@ import (
 	"github.com/savsgio/atreugo/v11"
 
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/project"
@@ -22,12 +23,14 @@ type EndpointConfig struct {
 	Flags      *flags.Flags
 	Middleware *middleware.Middleware
 	Models     *models.Model
+	Logger     micrologger.Logger
 }
 
 type Endpoint struct {
 	flags      *flags.Flags
 	middleware *middleware.Middleware
 	models     *models.Model
+	logger     micrologger.Logger
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
@@ -45,6 +48,7 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 		flags:      c.Flags,
 		middleware: c.Middleware,
 		models:     c.Models,
+		logger:     c.Logger,
 	}
 
 	return endpoint, nil

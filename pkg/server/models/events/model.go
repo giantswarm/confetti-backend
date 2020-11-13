@@ -5,17 +5,20 @@ import (
 	"sync"
 
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	types "github.com/giantswarm/confetti-backend/pkg/server/models/events/types"
 )
 
 type RepositoryConfig struct {
-	Flags *flags.Flags
+	Flags  *flags.Flags
+	Logger micrologger.Logger
 }
 
 type Repository struct {
-	flags *flags.Flags
+	flags  *flags.Flags
+	logger micrologger.Logger
 
 	mu     sync.Mutex
 	events []types.Event
@@ -25,9 +28,13 @@ func NewRepository(c RepositoryConfig) (*Repository, error) {
 	if c.Flags == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Flags must not be empty", c)
 	}
+	if c.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", c)
+	}
 
 	repository := &Repository{
-		flags: c.Flags,
+		flags:  c.Flags,
+		logger: c.Logger,
 
 		events: types.MakeInitialData(),
 	}

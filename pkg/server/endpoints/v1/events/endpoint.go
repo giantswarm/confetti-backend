@@ -4,6 +4,7 @@ import (
 	"github.com/atreugo/websocket"
 
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/endpoints/v1/events/lister"
@@ -19,6 +20,7 @@ type EndpointConfig struct {
 	Middleware        *middleware.Middleware
 	Models            *models.Model
 	WebsocketUpgrader *websocket.Upgrader
+	Logger            micrologger.Logger
 }
 
 type Endpoint struct {
@@ -30,6 +32,7 @@ type Endpoint struct {
 	middleware        *middleware.Middleware
 	models            *models.Model
 	websocketUpgrader *websocket.Upgrader
+	logger            micrologger.Logger
 }
 
 func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
@@ -45,18 +48,21 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 	if c.WebsocketUpgrader == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.WebsocketUpgrader must not be empty", c)
 	}
+	if c.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", c)
+	}
 
-	searcherEndpoint, err := createSearcherEndpoint(c.Flags, c.Middleware, c.Models)
+	searcherEndpoint, err := createSearcherEndpoint(c.Flags, c.Logger, c.Middleware, c.Models)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	watcherEndpoint, err := createWatcherEndpoint(c.Flags, c.Middleware, c.Models, c.WebsocketUpgrader)
+	watcherEndpoint, err := createWatcherEndpoint(c.Flags, c.Logger, c.Middleware, c.Models, c.WebsocketUpgrader)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
 
-	listerEndpoint, err := createListerEndpoint(c.Flags, c.Middleware, c.Models)
+	listerEndpoint, err := createListerEndpoint(c.Flags, c.Logger, c.Middleware, c.Models)
 	if err != nil {
 		return nil, microerror.Mask(err)
 	}
@@ -70,12 +76,13 @@ func NewEndpoint(c EndpointConfig) (*Endpoint, error) {
 		middleware:        c.Middleware,
 		models:            c.Models,
 		websocketUpgrader: c.WebsocketUpgrader,
+		logger:            c.Logger,
 	}
 
 	return endpoint, nil
 }
 
-func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model) (*searcher.Endpoint, error) {
+func createSearcherEndpoint(flags *flags.Flags, logger micrologger.Logger, middleware *middleware.Middleware, models *models.Model) (*searcher.Endpoint, error) {
 	var err error
 
 	var service *searcher.Service
@@ -83,6 +90,7 @@ func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middlewar
 		c := searcher.ServiceConfig{
 			Flags:  flags,
 			Models: models,
+			Logger: logger,
 		}
 		service, err = searcher.NewService(c)
 		if err != nil {
@@ -97,6 +105,7 @@ func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middlewar
 			Service:    service,
 			Middleware: middleware,
 			Models:     models,
+			Logger:     logger,
 		}
 		endpoint, err = searcher.NewEndpoint(c)
 		if err != nil {
@@ -107,7 +116,7 @@ func createSearcherEndpoint(flags *flags.Flags, middleware *middleware.Middlewar
 	return endpoint, nil
 }
 
-func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model, websocketUpgrader *websocket.Upgrader) (*watcher.Endpoint, error) {
+func createWatcherEndpoint(flags *flags.Flags, logger micrologger.Logger, middleware *middleware.Middleware, models *models.Model, websocketUpgrader *websocket.Upgrader) (*watcher.Endpoint, error) {
 	var err error
 
 	var hub websocketutil.Hub
@@ -124,6 +133,7 @@ func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware
 			Flags:  flags,
 			Models: models,
 			Hub:    hub,
+			Logger: logger,
 		}
 		service, err = watcher.NewService(c)
 		if err != nil {
@@ -139,6 +149,7 @@ func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware
 			Middleware:        middleware,
 			Models:            models,
 			WebsocketUpgrader: websocketUpgrader,
+			Logger:            logger,
 		}
 		endpoint, err = watcher.NewEndpoint(c)
 		if err != nil {
@@ -149,7 +160,7 @@ func createWatcherEndpoint(flags *flags.Flags, middleware *middleware.Middleware
 	return endpoint, nil
 }
 
-func createListerEndpoint(flags *flags.Flags, middleware *middleware.Middleware, models *models.Model) (*lister.Endpoint, error) {
+func createListerEndpoint(flags *flags.Flags, logger micrologger.Logger, middleware *middleware.Middleware, models *models.Model) (*lister.Endpoint, error) {
 	var err error
 
 	var service *lister.Service
@@ -157,6 +168,7 @@ func createListerEndpoint(flags *flags.Flags, middleware *middleware.Middleware,
 		c := lister.ServiceConfig{
 			Flags:  flags,
 			Models: models,
+			Logger: logger,
 		}
 		service, err = lister.NewService(c)
 		if err != nil {
@@ -171,6 +183,7 @@ func createListerEndpoint(flags *flags.Flags, middleware *middleware.Middleware,
 			Service:    service,
 			Middleware: middleware,
 			Models:     models,
+			Logger:     logger,
 		}
 		endpoint, err = lister.NewEndpoint(c)
 		if err != nil {

@@ -3,6 +3,7 @@ package watcher
 import (
 	"github.com/atreugo/websocket"
 	"github.com/giantswarm/microerror"
+	"github.com/giantswarm/micrologger"
 
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/context/event"
@@ -19,12 +20,15 @@ type ServiceConfig struct {
 	Flags  *flags.Flags
 	Hub    websocketutil.Hub
 	Models *models.Model
+	Logger micrologger.Logger
 }
 
 type Service struct {
-	flags                  *flags.Flags
-	hub                    websocketutil.Hub
-	models                 *models.Model
+	flags  *flags.Flags
+	hub    websocketutil.Hub
+	models *models.Model
+	logger micrologger.Logger
+
 	eventHandlerCollection *handlers.EventHandlerCollection
 }
 
@@ -38,16 +42,21 @@ func NewService(c ServiceConfig) (*Service, error) {
 	if c.Models == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Models must not be empty", c)
 	}
+	if c.Logger == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", c)
+	}
 
 	var ehc *handlers.EventHandlerCollection
 	{
 		defaultEventHandlerConfig := eventHandlers.DefaultEventConfig{
 			Models: c.Models,
+			Logger: c.Logger,
 		}
 		defaultEventHandler := eventHandlers.NewDefaultEventHandler(defaultEventHandlerConfig)
 
 		onsiteHandlerConfig := eventHandlers.OnsiteEventConfig{
 			Models: c.Models,
+			Logger: c.Logger,
 		}
 		onsiteHandler := eventHandlers.NewOnsiteEventHandler(onsiteHandlerConfig)
 
@@ -60,6 +69,7 @@ func NewService(c ServiceConfig) (*Service, error) {
 		flags:                  c.Flags,
 		models:                 c.Models,
 		hub:                    c.Hub,
+		logger:                 c.Logger,
 		eventHandlerCollection: ehc,
 	}
 

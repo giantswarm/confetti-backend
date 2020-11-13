@@ -12,7 +12,7 @@ func MakeInitialData() []Event {
 				ID:            "main-stage",
 				Name:          "Main Stage",
 				ConferenceURL: "https://www.giantswarm.io",
-				Description:   "Join Oliver to talk about your Kubernetes journey, your experience",
+				Description:   "Join Oliver to talk about your Kubernetes journey, your experience.",
 			},
 			{
 				ID:            "mulled-wine",
@@ -27,7 +27,7 @@ func MakeInitialData() []Event {
 				Description: `REMOTE FTW!
 Giant Swarm has been fully remote for 6 years now.
 If you want to dive deeper into a remote company organization, join us at our stall. We are curious about your challenges.
-We are not limited to remote only discussions. Other "new work buzzwords" like tranpsarency, self organization, agile, ... and how we fill them with life may also be on the plate. We are happy to share and discuss <3`,
+We are not limited to remote only discussions. Other "new work buzzwords" like transparency, self organization, agile, ...and how we fill them with life may also be on the plate. We are happy to share and discuss <3.`,
 			},
 			{
 				ID:            "monitoring",
@@ -49,7 +49,7 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 				ID:            "release-engineering",
 				Name:          "Release engineering",
 				ConferenceURL: "https://www.giantswarm.io",
-				Description:   "Cloud Native Infrastructure is powered by Continuous Integration and Continuous Deployment, and Release Engineering as a whole. Given that, the landscape is hard to navigate, with hundreds of tools, and many best practices. Talk with Giant Swarm Release Engineering experts, as well as other members of the larger Giant Swarm community ",
+				Description:   "Cloud Native Infrastructure is powered by Continuous Integration and Continuous Deployment, and Release Engineering as a whole. Given that, the landscape is hard to navigate, with hundreds of tools, and many best practices. Talk with Giant Swarm Release Engineering experts, as well as other members of the larger Giant Swarm community.",
 			},
 			{
 				ID:            "kubernetes",
@@ -89,9 +89,9 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 			},
 			{
 				ID:            "spare",
-				Name:          "A spare room",
+				Name:          "A spare stall",
 				ConferenceURL: "https://www.giantswarm.io",
-				Description:   "Just in case you get cold and you want to catch your breath.",
+				Description:   "Just in case you get cold and you want to relax for a bit.",
 			},
 		}
 	}

@@ -1,8 +1,8 @@
 package flags
 
 type Flags struct {
-	Address       string
-	AllowedOrigin string
+	Address        string
+	AllowedOrigins []string
 }
 
 func New() *Flags {

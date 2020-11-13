@@ -40,7 +40,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 	f := globalFlags.New()
 	{
 		f.Address = r.flag.Address
-		f.AllowedOrigin = r.flag.AllowedOrigin
+		f.AllowedOrigins = r.flag.AllowedOrigins
 	}
 
 	var atreugoServer *atreugo.Atreugo
@@ -61,7 +61,7 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 	var websocketUpgrader *websocket.Upgrader
 	{
 		c := websocket.Config{
-			AllowedOrigins:  []string{f.AllowedOrigin},
+			AllowedOrigins:  f.AllowedOrigins,
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
 		}

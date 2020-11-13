@@ -10,13 +10,13 @@ const (
 )
 
 type flag struct {
-	Address       string
-	AllowedOrigin string
+	Address        string
+	AllowedOrigins []string
 }
 
 func (f *flag) Init(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&f.Address, flagAddress, "0.0.0.0:7777", "Set the address that the application will run on.")
-	cmd.PersistentFlags().StringVar(&f.AllowedOrigin, flagAllowedOrigin, "*", "Set the allowed origin for connections.")
+	cmd.PersistentFlags().StringSliceVar(&f.AllowedOrigins, flagAllowedOrigin, []string{"*"}, "Set the allowed origin for connections.")
 }
 
 func (f *flag) Validate() error {

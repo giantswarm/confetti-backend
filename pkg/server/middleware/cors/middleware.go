@@ -36,7 +36,13 @@ func New(c Config) (*Middleware, error) {
 
 func (m *Middleware) Middleware() atreugo.Middleware {
 	return func(ctx *atreugo.RequestCtx) error {
-		ctx.Response.Header.Set("Access-Control-Allow-Origin", m.flags.AllowedOrigin)
+		origin := string(ctx.Request.Header.Peek("Origin"))
+		if !m.isOriginAllowed(m.flags.AllowedOrigins, origin) {
+			return ctx.Next()
+		}
+
+		ctx.Response.Header.Set("Access-Control-Allow-Origin", origin)
+
 		ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
 		ctx.Response.Header.Set("Access-Control-Allow-Headers", "Accept, Authorization, Cache-Control, Content-Type, DNT, If-Modified-Since, Keep-Alive, User-Agent, X-Request-ID, X-Requested-With")
 		ctx.Response.Header.Set("Access-Control-Expose-Headers", "Location")
@@ -45,4 +51,14 @@ func (m *Middleware) Middleware() atreugo.Middleware {
 
 		return ctx.Next()
 	}
+}
+
+func (m *Middleware) isOriginAllowed(allowed []string, origin string) bool {
+	for _, v := range allowed {
+		if v == origin || v == "*" {
+			return true
+		}
+	}
+
+	return false
 }

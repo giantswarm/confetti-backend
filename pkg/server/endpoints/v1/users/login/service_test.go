@@ -3,6 +3,8 @@ package login
 import (
 	"testing"
 
+	"github.com/giantswarm/micrologger"
+
 	"github.com/giantswarm/confetti-backend/internal/flags"
 	"github.com/giantswarm/confetti-backend/pkg/server/models"
 )
@@ -20,30 +22,49 @@ func TestService_generateToken(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			var err error
+
 			flags := flags.New()
 
-			modelsConfig := models.Config{
-				Flags: flags,
-			}
-			models, err := models.New(modelsConfig)
-			if err != nil {
-				t.Fatalf("unexpected error: %s", err.Error())
+			var logger micrologger.Logger
+			{
+				c := micrologger.Config{}
+				logger, err = micrologger.New(c)
+				if err != nil {
+					t.Fatalf("unexpected error: %s", err.Error())
+				}
 			}
 
-			c := ServiceConfig{
-				Flags:  flags,
-				Models: models,
+			var model *models.Model
+			{
+				c := models.Config{
+					Flags:  flags,
+					Logger: logger,
+				}
+				model, err = models.New(c)
+				if err != nil {
+					t.Fatalf("unexpected error: %s", err.Error())
+				}
 			}
-			s, err := NewService(c)
-			if err != nil {
-				t.Fatalf("unexpected error: %s", err.Error())
+
+			var service *Service
+			{
+				c := ServiceConfig{
+					Flags:  flags,
+					Models: model,
+					Logger: logger,
+				}
+				service, err = NewService(c)
+				if err != nil {
+					t.Fatalf("unexpected error: %s", err.Error())
+				}
 			}
 
 			results := make(map[string]bool)
 
 			var result string
 			for i := 0; i < tc.tries; i++ {
-				result, err = s.Authenticate()
+				result, err = service.Authenticate()
 				if err != nil {
 					t.Fatalf("unexpected error: %s", err.Error())
 				}

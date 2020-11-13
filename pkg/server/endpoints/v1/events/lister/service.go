@@ -35,6 +35,7 @@ func NewService(c ServiceConfig) (*Service, error) {
 	service := &Service{
 		flags:  c.Flags,
 		Models: c.Models,
+		logger: c.Logger,
 	}
 
 	return service, nil

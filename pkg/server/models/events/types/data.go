@@ -97,7 +97,7 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 				ID:            "info-signpost",
 				Name:          "Info signpost",
 				ConferenceURL: "https://www.giantswarm.io",
-				Description:   "Need some information about the stalls? Well this is probably not the best place for that, but you can still hang out here if you want.",
+				Description:   "Need some information about the stalls? Well this is probably not the best place for that, but you can still hang out if you want.",
 			},
 			{
 				ID:            "carousel",

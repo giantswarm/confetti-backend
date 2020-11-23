@@ -70,6 +70,48 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 				Description:   "We all wish it was as simple as pushing code, but Operations forms a large part of critical infrastructure. With modern improvements like DevOps and SecOps entering the space, room for innovation is at an all-time high. Chat with both your team members from other companies, and Giant Swarm engineers on everything that keeps the lights on.",
 			},
 			{
+				ID:            "christmas-tree",
+				Name:          "Christmas tree",
+				ConferenceURL: "https://www.giantswarm.io",
+				Description:   "We don't want to brag, but our Christmas tree is pretty much as cool as Christmas trees get. Take some selfies and share with your family and friends. They'll love it!",
+			},
+			{
+				ID:            "ice-rink",
+				Name:          "Ice rink",
+				ConferenceURL: "https://www.giantswarm.io",
+				Description:   "Challenge for today: Try not to fa... Nevermind, I just did.",
+			},
+			{
+				ID:            "puppet-show",
+				Name:          "Puppet show",
+				ConferenceURL: "https://www.giantswarm.io",
+				Description:   "Imagine if we had a puppet show. No, really. You can stand by this stall and imagine that. :)",
+			},
+			{
+				ID:            "ferris-wheel",
+				Name:          "Ferris wheel",
+				ConferenceURL: "https://www.giantswarm.io",
+				Description:   "Take a ride into the Ferris wheel and explore all the beautiful stalls from the sky.",
+			},
+			{
+				ID:            "info-signpost",
+				Name:          "Info signpost",
+				ConferenceURL: "https://www.giantswarm.io",
+				Description:   "Need some information about the stalls? Well this is probably not the best place for that, but you can still hang out if you want.",
+			},
+			{
+				ID:            "carousel",
+				Name:          "Carousel",
+				ConferenceURL: "https://www.giantswarm.io",
+				Description:   "Aren't you a little bit old for this? Alright... I'll let it slide this time around.",
+			},
+			{
+				ID:            "spare",
+				Name:          "A spare stall",
+				ConferenceURL: "https://www.giantswarm.io",
+				Description:   "Just in case you get cold and you want to relax for a bit.",
+			},
+			{
 				ID:            "direkt-gruppe",
 				Name:          "Partner - Direkt Gruppe",
 				ConferenceURL: "https://www.giantswarm.io",
@@ -86,12 +128,6 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 				Name:          "Partner - Viadee",
 				ConferenceURL: "https://www.giantswarm.io",
 				Description:   "",
-			},
-			{
-				ID:            "spare",
-				Name:          "A spare stall",
-				ConferenceURL: "https://www.giantswarm.io",
-				Description:   "Just in case you get cold and you want to relax for a bit.",
 			},
 		}
 	}

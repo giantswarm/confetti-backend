@@ -5,3 +5,7 @@
 An application for scheduling and executing remote events.
 
 This repository contains the back end code which powers signaling for the [confetti front end](https://github.com/giantswarm/confetti-frontend).
+
+## Change stall data
+
+For now stall data is living in [`pkg/server/models/events/types/data.go`](confetti-backend/pkg/server/models/events/types/data.go)

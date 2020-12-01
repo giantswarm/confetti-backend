@@ -31,7 +31,7 @@ We are not limited to remote only discussions. Other "new work buzzwords" like t
 			},
 			{
 				ID:            "monitoring",
-				Name:          "Monitoring / logging (\"Observability\" sounds cooler - Joe)",
+				Name:          "Observability",
 				ConferenceURL: "https://www.giantswarm.io",
 				Description:   "Prometheus? Loki? Jaeger? Feeling lost? Monitoring and observability is core to running modern Cloud Native infrastructure - find out the latest and greatest about the pillars of metrics, logging, tracing, and all things observability, from Giant Swarm engineers in the field and the larger Giant Swarm community.",
 			},
@@ -127,7 +127,7 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 				ID:            "viadee",
 				Name:          "Partner - Viadee",
 				ConferenceURL: "https://www.giantswarm.io",
-				Description:   "",
+				Description:   "Since 1994 viadee stands for independence, specific know-how and innovative spirit. We support our customers in finding and developing an individual cloud solution for their business model. We provide consulting services and train our customers on cloud platforms and applications. But don’t worry, we don’t stop at slides! We are also passionate and experienced hands-on developers.",
 			},
 		}
 	}

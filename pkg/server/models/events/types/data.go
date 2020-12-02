@@ -113,19 +113,19 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 			},
 			{
 				ID:            "direkt-gruppe",
-				Name:          "Partner - Direkt Gruppe",
+				Name:          "Partner - direkt gruppe",
 				ConferenceURL: "https://www.giantswarm.io",
-				Description:   "",
+				Description:   "direkt gruppe is a recognized digitization partner for IT strategy and technology, transformation and solutions as well as SAP process consulting. The group consists of four companies: direkt gruppe GmbH, advanced technology direkt GmbH, business solutions direkt GmbH and solutions direkt GmbH.",
 			},
 			{
 				ID:            "container-solutions",
 				Name:          "Partner - Container Solutions",
 				ConferenceURL: "https://www.giantswarm.io",
-				Description:   "",
+				Description:   "Container Solutions is a professional services firm that prides itself on helping companies migrate to Cloud Native. We collaborate closely with our clients, from the boardroom down, to increase independence, increase control, and reduce risk. We help organisations select the best path forward, regardless of vendor. We draw upon a wide range of skills honed in the real world: from formulating strategy, to teaching, to hardcore, distributed systems delivery.",
 			},
 			{
 				ID:            "viadee",
-				Name:          "Partner - Viadee",
+				Name:          "Partner - viadee",
 				ConferenceURL: "https://www.giantswarm.io",
 				Description:   "Since 1994 viadee stands for independence, specific know-how and innovative spirit. We support our customers in finding and developing an individual cloud solution for their business model. We provide consulting services and train our customers on cloud platforms and applications. But don’t worry, we don’t stop at slides! We are also passionate and experienced hands-on developers.",
 			},

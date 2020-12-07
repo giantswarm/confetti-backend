@@ -82,10 +82,10 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 				Description:   "Challenge for today: Try not to fa... Nevermind, I just did.",
 			},
 			{
-				ID:            "puppet-show",
-				Name:          "Puppet show",
-				ConferenceURL: "https://www.giantswarm.io",
-				Description:   "Imagine if we had a puppet show. No, really. You can stand by this stall and imagine that. :)",
+				ID:            "photo-booth",
+				Name:          "Photo booth",
+				ConferenceURL: "",
+				Description:   "Challenge for today: Who makes the funniest face wins!",
 			},
 			{
 				ID:            "ferris-wheel",

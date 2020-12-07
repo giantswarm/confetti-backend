@@ -82,10 +82,8 @@ MESSAGE VIA SIGNAL W/ BASE64 ENC TO LEARN / SHARE / DISCUSS LATEST SECURITY AND 
 				Description:   "Challenge for today: Try not to fa... Nevermind, I just did.",
 			},
 			{
-				ID:            "photo-booth",
-				Name:          "Photo booth",
-				ConferenceURL: "",
-				Description:   "Challenge for today: Who makes the funniest face wins!",
+				ID:   "photo-booth",
+				Name: "Photo booth",
 			},
 			{
 				ID:            "ferris-wheel",

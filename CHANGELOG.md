@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Updated the URLs for the Christmas Market Stalls so they all go to the right places.
 - Updated ingress with new cert-manager API group ([#3](https://github.com/giantswarm/confetti-backend/pull/3)}.
 
 [Unreleased]: https://github.com/giantswarm/confetti-backend/tree/master

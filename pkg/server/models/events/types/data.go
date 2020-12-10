@@ -11,7 +11,7 @@ func MakeInitialData() []Event {
 			{
 				ID:            "main-stage",
 				Name:          "Main Stage",
-				ConferenceURL: "https://meet.google.com/kio-hfeg-hos",
+				ConferenceURL: "https://swarm.ly/gsrxm",
 				Description:   "Join Oliver to talk about your Kubernetes journey, your experience.",
 			},
 			{

@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	globalFlags "github.com/giantswarm/confetti-backend/internal/flags"
+	wrappedLogger "github.com/giantswarm/confetti-backend/pkg/logger"
 	"github.com/giantswarm/confetti-backend/pkg/project"
 	"github.com/giantswarm/confetti-backend/pkg/server"
 )
@@ -44,13 +45,34 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 		f.AllowedOrigins = r.flag.AllowedOrigins
 	}
 
+	var logger micrologger.Logger
+	{
+		c := micrologger.Config{}
+
+		logger, err = micrologger.New(c)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	}
+
+	var atreugoLogger *wrappedLogger.Logger
+	{
+		c := wrappedLogger.Config{
+			WrappedLogger: logger,
+		}
+
+		atreugoLogger, err = wrappedLogger.New(c)
+		if err != nil {
+			return microerror.Mask(err)
+		}
+	}
+
 	var atreugoServer *atreugo.Atreugo
 	{
 		c := atreugo.Config{
-			LogName:          project.Name(),
 			Name:             project.Name(),
 			Addr:             f.Address,
-			LogOutput:        r.stdout,
+			Logger:           atreugoLogger,
 			GracefulShutdown: true,
 			ErrorView: func(ctx *atreugo.RequestCtx, err error, statusCode int) {
 				_ = ctx.JSONResponse(atreugo.JSON{"code": statusCode, "msg": err.Error()}, statusCode)
@@ -67,16 +89,6 @@ func (r *runner) run(ctx context.Context, cmd *cobra.Command, args []string) err
 			WriteBufferSize: 1024,
 		}
 		websocketUpgrader = websocket.New(c)
-	}
-
-	var logger micrologger.Logger
-	{
-		c := micrologger.Config{}
-
-		logger, err = micrologger.New(c)
-		if err != nil {
-			return microerror.Mask(err)
-		}
 	}
 
 	var s *server.Server

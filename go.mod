@@ -3,7 +3,7 @@ module github.com/giantswarm/confetti-backend
 go 1.15
 
 require (
-	github.com/atreugo/websocket v1.0.6
+	github.com/atreugo/websocket v1.0.7
 	github.com/giantswarm/microerror v0.3.0
 	github.com/giantswarm/micrologger v0.5.0
 	github.com/savsgio/atreugo/v11 v11.6.0

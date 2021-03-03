@@ -77,7 +77,6 @@ github.com/edsrzf/mmap-go v1.0.0/go.mod h1:YO35OhQPt3KJa3ryjFM5Bs14WD66h8eGKpfaB
 github.com/envoyproxy/go-control-plane v0.6.9/go.mod h1:SBwIajubJHhxtWwsL9s8ss4safvEdbitLhGGK48rN6g=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
-github.com/fasthttp/router v1.3.5 h1:XGZZtcYUH+9ZoLxKhwF66F8sGnMT+Jg00j0JdVzwmDA=
 github.com/fasthttp/router v1.3.5/go.mod h1:BylQKgvh6YQkR0mvL60+HJyTaGwcn5d8UFNweOb/Nw8=
 github.com/fasthttp/router v1.3.7 h1:yjLFbaALLCrUl8M7ZVwVoY4CCtV4xeqGSearuE8erz8=
 github.com/fasthttp/router v1.3.7/go.mod h1:DQBvuHvYbn3SUN6pGjwjPbpCNpWfCFc5Ipn/Fj6XxFc=
@@ -277,7 +276,6 @@ github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
 github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da/go.mod h1:gi+0XIa01GRL2eRQVjQkKGqKF3SF9vZR/HnPullcV2E=
-github.com/savsgio/atreugo/v11 v11.6.0 h1:q4Wi3KKRlXIcB9taPE8Ap7Yp9oUGNLggo9tZ0jKQh0k=
 github.com/savsgio/atreugo/v11 v11.6.0/go.mod h1:mpYNJk8HNZBDsnoGD9WoqjZ3iCI+q2YKJoQwatMa8vc=
 github.com/savsgio/atreugo/v11 v11.6.2 h1:B90rAoGl7w4Q8/VfAXAtqMwxtOBzp6Clao1U5wwTq/8=
 github.com/savsgio/atreugo/v11 v11.6.2/go.mod h1:QJU5E9Q1iLORmb9F/u6S2b56pWJPc3vj/k52GoCdfDY=
@@ -285,7 +283,6 @@ github.com/savsgio/dictpool v0.0.0-20210105101557-9da1bc2fbfce h1:PRDREQ3VGiocUy
 github.com/savsgio/dictpool v0.0.0-20210105101557-9da1bc2fbfce/go.mod h1:TNr2IIMnYd9/KYEpTVHVrnfmjizlKPTSgkWUbjyof+A=
 github.com/savsgio/go-logger/v2 v2.1.0 h1:aPvUruuyAU3FZD8MuxXlBchAjzUPxW0ZPP1jIjmfpDI=
 github.com/savsgio/go-logger/v2 v2.1.0/go.mod h1:fog+sZsg75Or4EENyd1jrS/Ps44s39hd6lccqALz0C8=
-github.com/savsgio/gotils v0.0.0-20210105085219-0567298fdcac h1:5pr1F6tcjeIKPKlrQZW6hzB0WxZge7SkkYVGG/e5pLY=
 github.com/savsgio/gotils v0.0.0-20210105085219-0567298fdcac/go.mod h1:TWNAOTaVzGOXq8RbEvHnhzA/A2sLZzgn0m6URjnukY8=
 github.com/savsgio/gotils v0.0.0-20210217112953-d4a072536008 h1:GfiZ0x43l1tOeyam9RAlJaUkxPwGRz3bIbmtyfTZIWY=
 github.com/savsgio/gotils v0.0.0-20210217112953-d4a072536008/go.mod h1:TWNAOTaVzGOXq8RbEvHnhzA/A2sLZzgn0m6URjnukY8=
@@ -327,7 +324,6 @@ github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijb
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
-github.com/valyala/fasthttp v1.19.0 h1:PfTS4PeH3xDr3WomrDS2ID8lU2GskK1xS3YG6gIpibU=
 github.com/valyala/fasthttp v1.19.0/go.mod h1:jjraHZVbKOXftJfsOYoAjaeygpj5hr8ermTRJNroD7A=
 github.com/valyala/fasthttp v1.21.0 h1:fJjaQ7cXdaSF9vDBujlHLDGj7AgoMTMIXvICeePzYbU=
 github.com/valyala/fasthttp v1.21.0/go.mod h1:jjraHZVbKOXftJfsOYoAjaeygpj5hr8ermTRJNroD7A=
@@ -464,7 +460,6 @@ golang.org/x/tools v0.0.0-20200103221440-774c71fcf114/go.mod h1:TB2adYChydJhpapK
 golang.org/x/tools v0.0.0-20201022035929-9cf592e881e9/go.mod h1:emZCQorbCU4vsT4fOWvOPXz4eW1wZW4PmDk9uLelYpA=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
-golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 h1:E7g+9GITq07hpfrRu66IVDexMakfv52eLZ2CXBWiKr4=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 h1:go1bK/D/BFZV2I8cIQd1NKEZ+0owSTG1fDTci4IqFcE=
 golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=

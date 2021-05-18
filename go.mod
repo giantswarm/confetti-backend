@@ -10,4 +10,7 @@ require (
 	github.com/spf13/cobra v1.1.3
 )
 
-replace github.com/coreos/etcd => github.com/coreos/etcd v3.3.24+incompatible
+replace (
+	github.com/coreos/etcd => github.com/coreos/etcd v3.3.24+incompatible
+	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
+)
